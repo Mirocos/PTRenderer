@@ -10,18 +10,19 @@
 
 namespace PTRenderer{
 
-    enum ObjectType{
-        TRIANGLE,
-        PLANE,
-        SPHERE
-    };
-
     class Primitives {
+
     public:
+        enum ObjectType{
+            TRIANGLE,
+            PLANE,
+            SPHERE
+        };
+
         Primitives() = delete;
         Primitives(const ObjectType& _type, std::shared_ptr<Material> _material);
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin) = 0;
-        virtual bool shade() = 0;
+        virtual glm::vec3 shade() = 0;
 
     protected:
         ObjectType type;
@@ -39,7 +40,7 @@ namespace PTRenderer{
         Triangle(const Triangle& triangle);
 
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
-        virtual bool shade();
+        virtual glm::vec3 shade();
 
 
         const glm::vec3& x() const { return a; }
@@ -48,10 +49,14 @@ namespace PTRenderer{
 
 
     private:
+
+        glm::mat3 get_matA(const glm::vec3 rd);
+        glm::mat3 get_matBeta(const glm::vec3& ro, const glm::mat3& A);
+        glm::mat3 get_matGamma(const glm::vec3& ro, const glm::mat3& A);
+        glm::mat3 get_matT(const glm::vec3& ro, const glm::mat3& A);
+
         glm::vec3 a, b, c;
         glm::vec3 normal;
-        float gamma;
-        float beta;
     };
 
 }
