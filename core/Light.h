@@ -18,7 +18,7 @@ namespace PTRenderer{
 
         Light(const glm::vec3& _color, LightType _type);
         virtual glm::vec3 get_light_dir(const glm::vec3& pos) = 0;
-        virtual const glm::vec3& get_light_density(const glm::vec3& pos) const { return base_color; }
+        virtual glm::vec3 get_light_density(const glm::vec3& pos) const { return base_color; }
 
     protected:
         LightType type;
@@ -32,7 +32,7 @@ namespace PTRenderer{
     public:
         PointLight(const glm::vec3 _center, const glm::vec3& _color);
         virtual glm::vec3 get_light_dir(const glm::vec3& pos);
-        virtual const glm::vec3& get_light_density(const glm::vec3& pos) const;
+        virtual glm::vec3 get_light_density(const glm::vec3& pos) const;
 
     private:
         glm::vec3 center;
@@ -45,7 +45,7 @@ namespace PTRenderer{
     public:
         DirectionLight(const glm::vec3& _direction, const glm::vec3& _color);
         virtual glm::vec3 get_light_dir(const glm::vec3& pos);
-        virtual const glm::vec3& get_light_density(const glm::vec3& pos) const;
+        virtual glm::vec3 get_light_density(const glm::vec3& pos) const;
 
 
     private:

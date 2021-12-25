@@ -4,6 +4,8 @@
 
 #ifndef PTRENDERER_PRIMITIVES_H
 #define PTRENDERER_PRIMITIVES_H
+
+#include <vector>
 #include "Ray.h"
 #include "Intersection.h"
 
@@ -37,6 +39,7 @@ namespace PTRenderer{
     public:
         Triangle() = delete;
         Triangle(const glm::vec3& _a, const glm::vec3& _b, const glm::vec3& _c, std::shared_ptr<Material> _material);
+        Triangle(const std::vector<glm::vec3>& points, std::shared_ptr<Material> _material);
         Triangle(const Triangle& triangle);
 
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
@@ -54,6 +57,8 @@ namespace PTRenderer{
         glm::mat3 get_matBeta(const glm::vec3& ro, const glm::mat3& A);
         glm::mat3 get_matGamma(const glm::vec3& ro, const glm::mat3& A);
         glm::mat3 get_matT(const glm::vec3& ro, const glm::mat3& A);
+
+        void calculate_normal();
 
         glm::vec3 a, b, c;
         glm::vec3 normal;

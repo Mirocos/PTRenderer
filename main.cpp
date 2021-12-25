@@ -1,8 +1,11 @@
 #include <iostream>
-#include "common/Camera.h"
+#include <memory>
+#include "core/Model.h"
+
+
 int main() {
-//    std::cout << "Hello, World!" << std::endl;
-    float angle = 60.f;
-    std::cout << glm::atan(1.f) << std::endl;
+    std::string path = "../scenes/veach-mis/veach-mis.obj";
+    PTRenderer::Model model(path);
+    int n = 0;
     return 0;
 }

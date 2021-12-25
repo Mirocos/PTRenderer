@@ -15,6 +15,15 @@ namespace PTRenderer{
 
     Triangle::Triangle(const glm::vec3 &_a, const glm::vec3 &_b, const glm::vec3 &_c, std::shared_ptr<Material> _material)
     : Primitives(ObjectType::TRIANGLE, _material), a(_a), b(_b), c(_c){
+        calculate_normal();
+    }
+
+    Triangle::Triangle(const std::vector<glm::vec3> &points, std::shared_ptr<Material> _material)
+    : Primitives(ObjectType::TRIANGLE, _material), a(points[0]), b(points[1]), c(points[2]){
+        calculate_normal();
+    }
+
+    void Triangle::calculate_normal(){
         glm::vec3 ab = b - a;
         glm::vec3 ac = c - a;
         normal = glm::cross(ab, ac);
@@ -105,6 +114,8 @@ namespace PTRenderer{
         T[2][2] = a.z - ro.z;
         return T;
     }
+
+
 
 
 }

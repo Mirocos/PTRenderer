@@ -25,7 +25,7 @@ namespace PTRenderer {
         return direction;
     }
 
-    const glm::vec3 &PointLight::get_light_density(const glm::vec3 &pos) const {
+    glm::vec3 PointLight::get_light_density(const glm::vec3 &pos) const {
         glm::vec3 distance_dir = center - pos;
         float distance = glm::length(distance_dir);
 
@@ -47,7 +47,7 @@ namespace PTRenderer {
         return direction;
     }
 
-    const glm::vec3 &DirectionLight::get_light_density(const glm::vec3 &pos) const {
+    glm::vec3 DirectionLight::get_light_density(const glm::vec3 &pos) const {
         return light_color;
     }
 }
