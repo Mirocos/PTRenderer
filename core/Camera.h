@@ -8,7 +8,7 @@
 
 #include "Ray.h"
 
-// TODO hack, temporary type 'Ray', need to implement later as a Class
+
 
 
 namespace PTRenderer{
@@ -17,7 +17,7 @@ namespace PTRenderer{
         Camera() = delete;
         Camera(const glm::vec3& _center, glm::vec3& _up, glm::vec3& _direction);
         virtual Ray generate_ray(const glm::vec2& point) = 0;
-        virtual float getTMin() const = 0;
+        virtual float get_min_t() const = 0;
 
 
     protected:

@@ -2,6 +2,7 @@
 // Created by zeming on 2021/12/17.
 //
 
+#include <iostream>
 #include "Primitives.h"
 const float INTERSECTION_EPSILON = 1e-4;
 
@@ -27,7 +28,7 @@ namespace PTRenderer{
         glm::vec3 ab = b - a;
         glm::vec3 ac = c - a;
         normal = glm::cross(ab, ac);
-        glm::normalize(normal);
+        normal = glm::normalize(normal);
     }
 
     Triangle::Triangle(const Triangle &triangle) : Primitives(triangle.type, triangle.material) {
@@ -37,18 +38,22 @@ namespace PTRenderer{
     bool Triangle::intersect(const Ray &ray, Intersection &hit, float tmin) {
        glm::vec3 ro = ray.get_origin();
        glm::vec3 rd = ray.get_direction();
-
-       assert(glm::length(rd) == 1.0);
+       rd = glm::normalize(rd);
+        float length = glm::length(rd);
 
        glm::mat3 A = get_matA(rd);
        glm::mat3 BETA = get_matBeta(ro, A);
        glm::mat3 GAMMA = get_matGamma(ro, A);
        glm::mat3 T = get_matT(ro ,A);
 
-       float inverse_detA = 1.f / glm::determinant(A);
+       float detA = glm::determinant(A);
+       float inverse_detA = 1.f / detA;
        float detBETA = glm::determinant(BETA);
+//        calculate_det(BETA);
        float detGAMMA = glm::determinant(GAMMA);
+//        calculate_det(GAMMA);
        float detT = glm::determinant(T);
+//        calculate_det(T);
 
        float beta = detBETA * inverse_detA;
        float gamma = detGAMMA * inverse_detA;
@@ -56,10 +61,10 @@ namespace PTRenderer{
 
 
        // TODO may add Epsilon?
-       if(beta > 0 && gamma > 0 && beta + gamma < 1.f)
+       if(!(beta > 0 && gamma > 0 && beta + gamma < 1.f))
            return false;
 
-       if( t > tmin )
+       if( t < tmin )
            return false;
 
        if(t < hit.get_t() + INTERSECTION_EPSILON){
@@ -67,6 +72,7 @@ namespace PTRenderer{
            hit.set_t(t);
            hit.set_material(material);
            hit.set_intersection(hit_point);
+           hit.set_normal(normal);
            return true;
        }
 
@@ -88,6 +94,7 @@ namespace PTRenderer{
         A[2][0] = a.z - b.z;
         A[2][1] = a.z - c.z;
         A[2][2] = rd.z;
+
         return A;
     }
 

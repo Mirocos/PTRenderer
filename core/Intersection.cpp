@@ -3,11 +3,13 @@
 //
 
 #include "Intersection.h"
+#include "glm/geometric.hpp"
 
 namespace PTRenderer{
 
-    Intersection::Intersection(std::shared_ptr<Material> _material, glm::vec3 &point, float _t)
-    : material(_material), intersection_point(point),  t(_t){
+    Intersection::Intersection(std::shared_ptr<Material> _material, glm::vec3 point, glm::vec3 _normal, float _t)
+    : material(_material), intersection_point(point), normal(_normal), t(_t){
+        glm::normalize(normal);
     }
 
     Intersection::Intersection(const Intersection &hit) {
@@ -20,6 +22,10 @@ namespace PTRenderer{
 
     void Intersection::set_t(float _t) {
         t = _t;
+    }
+
+    void Intersection::set_normal(const glm::vec3 &_normal) {
+        normal = _normal;
     }
 
 

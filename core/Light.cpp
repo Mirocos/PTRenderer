@@ -20,7 +20,7 @@ namespace PTRenderer {
 
     glm::vec3 PointLight::get_light_dir(const glm::vec3 &pos) {
         glm::vec3 direction = center - pos;
-        glm::normalize(direction);
+        direction = glm::normalize(direction);
         assert(glm::length(direction) == 1.0);
         return direction;
     }
@@ -40,11 +40,11 @@ namespace PTRenderer {
 
     DirectionLight::DirectionLight(const glm::vec3 &_direction, const glm::vec3 &_color)
     : Light(_color, Light::DIRECTIONAL_LIGHT), direction(_direction), light_color(_color){
-        glm::normalize(direction);
+        direction = glm::normalize(direction);
     }
 
     glm::vec3 DirectionLight::get_light_dir(const glm::vec3 &pos) {
-        return direction;
+        return -direction;
     }
 
     glm::vec3 DirectionLight::get_light_density(const glm::vec3 &pos) const {

@@ -7,12 +7,13 @@
 namespace PTRenderer {
 
     Camera::Camera(const glm::vec3 &_center, glm::vec3 &_up, glm::vec3 &_direction) : center(_center){
-        glm::normalize(_direction);
+        _direction = glm::normalize(_direction);
         direction = _direction;
-        glm::normalize(_up);
+        _up = glm::normalize(_up);
         horizontal = glm::cross(_direction, _up);
-        glm::normalize(horizontal);
+        horizontal = glm::normalize(horizontal);
         up = glm::cross(horizontal, _direction);
+        up = glm::normalize(up);
     }
 
     OrthographicCamera::OrthographicCamera(const glm::vec3 &_center, glm::vec3 &_up, glm::vec3 &_direction,float _size)

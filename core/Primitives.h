@@ -8,7 +8,7 @@
 #include <vector>
 #include "Ray.h"
 #include "Intersection.h"
-
+#include "iostream"
 
 namespace PTRenderer{
 
@@ -59,6 +59,8 @@ namespace PTRenderer{
         glm::mat3 get_matT(const glm::vec3& ro, const glm::mat3& A);
 
         void calculate_normal();
+        void calculate_det(const glm::mat3& A){         std::cout << A[0][0] * A[1][1] * A[2][2] + A[0][1] * A[1][2] * A[2][0] + A[0][2] * A[1][0] * A[2][1] \
+        - A[0][0] * A[1][2] * A[2][1] - A[0][1] * A[1][0] * A[2][2] - A[0][2] * A[1][1] * A[2][0] << "\n"; }
 
         glm::vec3 a, b, c;
         glm::vec3 normal;

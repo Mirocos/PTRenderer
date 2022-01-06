@@ -15,18 +15,28 @@ namespace PTRenderer {
     class Intersection {
     public:
         Intersection() = delete;
-        Intersection(std::shared_ptr<Material> _material, glm::vec3& point, float _t);
+        Intersection(std::shared_ptr<Material> _material, glm::vec3 point, glm::vec3 _normal, float _t);
         Intersection(const Intersection& hit);
 
         void set_intersection(const glm::vec3& point);
+        void set_normal(const glm::vec3& _normal);
         void set_t(float _t);
-        float get_t() { return t; }
         void set_material(std::shared_ptr<Material> _material) { material = _material; }
+
+
+        float get_t() { return t; }
+        const std::shared_ptr<Material> get_material() const { return material; }
+        const glm::vec3& get_hit_point() const { return intersection_point; }
+        const glm::vec3& get_normal() const { return normal; }
+
+
 
     private:
         float t;                // current closest t value
         glm::vec3 intersection_point;
+        glm::vec3 normal;
         std::shared_ptr<Material> material;
+
     };
 }
 
