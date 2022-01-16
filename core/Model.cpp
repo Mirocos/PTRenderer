@@ -17,7 +17,12 @@ namespace PTRenderer{
             std::cerr << "ERROR::ASSIMP::DIRECTORY DOES NOT EXISTS: " << path << std::endl;
         std::string obj_path = "";
         for(const auto& entry : std::filesystem::directory_iterator(path)){
-            std::string file_path = entry.path();
+            std::string file_path = "";
+#ifdef _MSC_VER
+            file_path = entry.path().string();
+#elif __GNUC__
+            file_path = entry.path();
+#endif
             if(file_path.find(".obj") != std::string::npos){
                 obj_path = file_path;
                 break;

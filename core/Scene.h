@@ -22,16 +22,29 @@ namespace PTRenderer{
             camera = nullptr;
         };
 
+
+        Scene(const std::string& scene_file);
+
+        ~Scene(){
+            objects.clear();
+            models.clear();
+            lights.clear();
+        }
+
+
         explicit Scene(std::shared_ptr<Camera>  _camera) : camera(std::move(_camera)){
             objects.resize(0);
             models.resize(0);
             lights.resize(0);
         }
+
         void add_model(const std::shared_ptr<Model>& model);
         void add_models(const std::vector<std::shared_ptr<Model>>& _models);
         void add_light(const std::shared_ptr<Light>& light);
         void add_lights(const std::vector<std::shared_ptr<Light>>& _lights);
         void add_primitives(const std::shared_ptr<Primitives> obj);
+
+        void set_camera(std::shared_ptr<Camera> _camera) { camera = std::move(_camera)}
 
         glm::vec3 get_color(const Intersection& hit);
         Ray generate_ray(const glm::vec2& point) { return camera->generate_ray(point); }

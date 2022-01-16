@@ -12,8 +12,10 @@ add_executable(${PROJECT_NAME} main.cpp
                ${COMMON_SOURCE}
         )
 
+
 target_include_directories(${PROJECT_NAME} PRIVATE assimp)
 target_include_directories(${PROJECT_NAME} PRIVATE glm)
-target_link_libraries(${PROJECT_NAME} assimp)
-target_link_libraries(${PROJECT_NAME} glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm)
+
 

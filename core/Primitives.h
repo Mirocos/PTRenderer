@@ -18,7 +18,9 @@ namespace PTRenderer{
         enum ObjectType{
             TRIANGLE,
             PLANE,
-            SPHERE
+            SPHERE,
+            GROUP,
+            TRANSFORM
         };
 
         Primitives() = delete;
@@ -64,6 +66,40 @@ namespace PTRenderer{
 
         glm::vec3 a, b, c;
         glm::vec3 normal;
+    };
+
+
+
+
+
+
+    class Group : public Primitives{
+    public:
+        Group() = delete;
+        Group(int _num);
+        virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
+
+        void add_primitive(int index, std::shared_ptr<Primitives> obj);
+        virtual glm::vec3 shade();
+
+    private:
+        std::vector<std::shared_ptr<Primitives>> objects;
+        int num;
+    };
+
+
+    class Transform : public Primitives{
+    public:
+        Transform(const glm::mat4& _m, const std::shared_ptr<Primitives> &_obj);
+        virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
+        virtual glm::vec3 shade();
+
+
+    private:
+        glm::mat4 matrix;
+        glm::mat4 inverse_matrix;
+        glm::mat4 inverse_transpose_matrix;
+        std::shared_ptr<Primitives> obj;
     };
 
 }

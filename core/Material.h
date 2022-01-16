@@ -17,6 +17,23 @@ namespace PTRenderer{
     protected:
         glm::vec3 diffuse_color;
     };
+
+
+
+    class PhongMaterial : public Material{
+    public:
+        PhongMaterial(const glm::vec3& _diffuse_color, const glm::vec3& _specular_color, float _exp, const glm::vec3& _reflective_color, const glm::vec3& _transparent_color, float _index_of_refraction);
+
+
+    private:
+        glm::vec3 specular_color;
+        glm::vec3 reflective_color;
+        glm::vec3 transparent_color;
+
+
+        float exponent;
+        float index_of_refraction;
+    };
 }
 
 

@@ -12,6 +12,12 @@ void PTRenderer::Scene::add_model(const std::shared_ptr<Model> &model) {
     }
 }
 
+PTRenderer::Scene::Scene(const std::string &scene_file) {
+
+}
+
+
+
 void PTRenderer::Scene::add_models(const std::vector<std::shared_ptr<Model>> &_models) {
     for(const auto& model : _models)
         add_model(model);
@@ -53,3 +59,5 @@ glm::vec3 PTRenderer::Scene::get_color(const Intersection &hit) {
 void PTRenderer::Scene::add_primitives(const std::shared_ptr<Primitives> obj) {
     objects.push_back(obj);
 }
+
+

@@ -9,7 +9,7 @@ const float INTERSECTION_EPSILON = 1e-4;
 namespace PTRenderer{
 
     Primitives::Primitives(const ObjectType &_type, std::shared_ptr<Material> _material)
-    : type(_type), material(_material){
+    : type(_type), material(std::move(_material)){
 
     }
 
@@ -123,6 +123,59 @@ namespace PTRenderer{
     }
 
 
+    Group::Group(int _num) : Primitives(ObjectType::GROUP, std::make_shared<Material>(glm::vec3(1.f, 1.f, 1.f))), num(_num) {
+        objects.resize(num);
+    }
+
+    bool Group::intersect(const Ray &ray, Intersection &hit, float tmin) {
+        bool intersected = false;
+        for(unsigned i = 0; i < num; i++){
+            if(objects[i]->intersect(ray, hit, tmin)){
+                intersected = true;
+            }
+        }
+        return intersected;
+    }
+
+    void Group::add_primitive(int index, std::shared_ptr<Primitives> obj) {
+        objects[index] = obj;
+    }
+
+    Transform::Transform(const glm::mat4 &_m, const std::shared_ptr<Primitives> &_obj)
+    : Primitives(ObjectType::TRANSFORM, std::make_shared<Material>(glm::vec3(1.f, 1.f, 1.f))), matrix(_m), obj(_obj){
+        inverse_matrix = glm::inverse(matrix);
+        inverse_transpose_matrix = glm::transpose(inverse_matrix);
+    }
+
+    bool Transform::intersect(const Ray &ray, Intersection &hit, float tmin) {
+
+        auto dir_obj = ray.get_direction();
+        auto ori_obj = ray.get_origin();
+
+        auto transform_dir_obj = inverse_matrix * glm::vec4(dir_obj, 0.f);
+
+        auto transform_ori_obj = inverse_matrix * glm::vec4(ori_obj, 1.f);
+
+        Ray r_obj(transform_ori_obj, transform_dir_obj);
+        Intersection _h(hit.get_material(), hit.get_hit_point(), hit.get_normal(), hit.get_t());
+        bool intersected = false;
+        if(obj->intersect(r_obj, _h, tmin)){
+            intersected = true;
+            auto normal = _h.get_normal();
+            auto normal_world = inverse_transpose_matrix * glm::vec4(normal, 0.f);
+            normal_world = glm::normalize(normal_world);
+            hit.set_normal(normal_world);
+            hit.set_intersection(_h.get_hit_point());
+            hit.set_t(_h.get_t());
+            // TODO add ray as a memeber in Intersection
 
 
+        }
+
+        return intersected;
+    }
+
+    glm::vec3 Transform::shade() {
+        return material->get_diffuse_color();
+    }
 }
