@@ -19,7 +19,10 @@ namespace PTRenderer{
         virtual Ray generate_ray(const glm::vec2& point) = 0;
         virtual float get_min_t() const = 0;
 
+        virtual glm::mat4 get_view_mtx() = 0;
 
+
+        virtual void translate(const glm::vec3& vec);
     protected:
         glm::vec3 center;
         glm::vec3 up;
@@ -37,6 +40,7 @@ namespace PTRenderer{
 
         virtual Ray generate_ray(const glm::vec2& point);
         virtual float get_min_t() const;
+        virtual glm::mat4 get_view_mtx();
 
     private:
         float size;
@@ -60,6 +64,7 @@ namespace PTRenderer{
 
         virtual Ray generate_ray(const glm::vec2& point);
         virtual float get_min_t() const;
+        virtual glm::mat4 get_view_mtx();
 
     private:
         float angle;

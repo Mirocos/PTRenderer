@@ -18,13 +18,15 @@ namespace PTRenderer{
         enum ObjectType{
             TRIANGLE,
             PLANE,
-            SPHERE
+            SPHERE,
+            TRIANGLE_MESH
         };
 
         Primitives() = delete;
         Primitives(const ObjectType& _type, std::shared_ptr<Material> _material);
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin) = 0;
         virtual glm::vec3 shade() = 0;
+
 
     protected:
         ObjectType type;
@@ -65,6 +67,9 @@ namespace PTRenderer{
         glm::vec3 a, b, c;
         glm::vec3 normal;
     };
+
+
+
 
 }
 

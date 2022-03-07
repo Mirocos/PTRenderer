@@ -16,6 +16,10 @@ namespace PTRenderer {
         up = glm::normalize(up);
     }
 
+    void Camera::translate(const glm::vec3 &vec) {
+       center += vec;
+    }
+
     OrthographicCamera::OrthographicCamera(const glm::vec3 &_center, glm::vec3 &_up, glm::vec3 &_direction,float _size)
     : Camera(_center, _up, _direction), size(_size){
 
@@ -35,6 +39,10 @@ namespace PTRenderer {
         return -INFINITY;
     }
 
+    glm::mat4 OrthographicCamera::get_view_mtx() {
+        return glm::lookAt(center, center + direction, up);
+    }
+
 
     PerspectiveCamera::PerspectiveCamera(const glm::vec3 &_center, glm::vec3 &_up, glm::vec3 &_direction, float _angle)
     : Camera(_center, _up, _direction), angle(_angle){
@@ -52,6 +60,10 @@ namespace PTRenderer {
 
     float PerspectiveCamera::get_min_t() const {
         return 0.f;
+    }
+
+    glm::mat4 PerspectiveCamera::get_view_mtx() {
+        return glm::lookAt(center, center + direction, up);
     }
 }
 

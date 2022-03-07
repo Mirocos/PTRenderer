@@ -34,13 +34,24 @@ namespace PTRenderer{
         void add_primitives(const std::shared_ptr<Primitives> obj);
 
         glm::vec3 get_color(const Intersection& hit);
+
+
+        // camera access
         Ray generate_ray(const glm::vec2& point) { return camera->generate_ray(point); }
+        void translate(const glm::vec3& vec) { camera->translate(vec); }
+
+        glm::mat4 get_view_mtx() { return camera->get_view_mtx(); }
+
         float get_min_t() { return camera->get_min_t(); }
 
         bool intersect(const Ray& ray, Intersection& hit, float tmin);
+        glm::vec3 trace_ray(const Ray&ray, Intersection& hit, float cutoff, int bounce);
+
+
+
+        std::vector<std::shared_ptr<Model>> models;
     private:
         std::vector<std::shared_ptr<Primitives>> objects;
-        std::vector<std::shared_ptr<Model>> models;
         std::vector<std::shared_ptr<Light>> lights;
         std::shared_ptr<Camera> camera;
     };

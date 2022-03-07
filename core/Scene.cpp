@@ -6,7 +6,7 @@
 
 void PTRenderer::Scene::add_model(const std::shared_ptr<Model> &model) {
     models.push_back(model);
-    auto mesh = model->get_mesh();
+    auto mesh = model->GetMesh();
     for(const auto& tri : mesh){
         objects.push_back(std::make_shared<Triangle>(tri));
     }
