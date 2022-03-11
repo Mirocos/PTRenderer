@@ -20,6 +20,8 @@ namespace PTRenderer{
             models.resize(0);
             lights.resize(0);
             camera = nullptr;
+            cutoff_wight = 1e-3;
+            cutoff_bounce = 3;
         };
 
         explicit Scene(std::shared_ptr<Camera>  _camera) : camera(std::move(_camera)){
@@ -45,15 +47,23 @@ namespace PTRenderer{
         float get_min_t() { return camera->get_min_t(); }
 
         bool intersect(const Ray& ray, Intersection& hit, float tmin);
-        glm::vec3 trace_ray(const Ray&ray, Intersection& hit, float cutoff, int bounce);
+        glm::vec3 trace_ray(const Ray&ray, float weight, int bounce);
 
 
 
         std::vector<std::shared_ptr<Model>> models;
+
+
     private:
         std::vector<std::shared_ptr<Primitives>> objects;
         std::vector<std::shared_ptr<Light>> lights;
         std::shared_ptr<Camera> camera;
+
+        float cutoff_wight;
+        int cutoff_bounce;
+
+
+
     };
 
 }

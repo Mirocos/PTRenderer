@@ -20,9 +20,10 @@ namespace PTRenderer{
         virtual float get_min_t() const = 0;
 
         virtual glm::mat4 get_view_mtx() = 0;
-
-
         virtual void translate(const glm::vec3& vec);
+
+
+        glm::vec3 get_view_dir(const glm::vec3& p);
     protected:
         glm::vec3 center;
         glm::vec3 up;

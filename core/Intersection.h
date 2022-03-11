@@ -14,7 +14,7 @@
 namespace PTRenderer {
     class Intersection {
     public:
-        Intersection() = delete;
+        Intersection();
         Intersection(std::shared_ptr<Material> _material, glm::vec3 point, glm::vec3 _normal, float _t);
         Intersection(const Intersection& hit);
 

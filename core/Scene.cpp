@@ -53,3 +53,34 @@ glm::vec3 PTRenderer::Scene::get_color(const Intersection &hit) {
 void PTRenderer::Scene::add_primitives(const std::shared_ptr<Primitives> obj) {
     objects.push_back(obj);
 }
+
+glm::vec3 PTRenderer::Scene::trace_ray(const PTRenderer::Ray &ray, float weight, int bounce) {
+    if(weight <= cutoff_wight)
+        return glm::vec3(0.f);
+    if(bounce >= cutoff_bounce)
+        return glm::vec3(0.f);
+
+
+    Intersection hit;
+    if(!intersect(ray, hit, get_min_t()))
+        return glm::vec3(0.f);
+
+    glm::vec3 L = lights[0]->get_light_dir(hit.get_hit_point());
+    glm::vec3 V = camera->get_view_dir(hit.get_hit_point());
+    glm::vec3 N = hit.get_normal();
+    glm::vec3 color = hit.get_material()->shade(N, L, V);
+
+    auto _m = hit.get_material();
+
+    if(_m->reflectable()){
+        glm::vec3 R = reflect(-L, N);
+        Ray reflect_ray(hit.get_hit_point(), R);
+
+    }
+
+
+
+
+    return glm::vec3();
+}
+

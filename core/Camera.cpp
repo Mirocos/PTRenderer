@@ -20,6 +20,11 @@ namespace PTRenderer {
        center += vec;
     }
 
+    glm::vec3 Camera::get_view_dir(const glm::vec3 &p) {
+        glm::vec3 V = center - p;
+        return glm::normalize(V);
+    }
+
     OrthographicCamera::OrthographicCamera(const glm::vec3 &_center, glm::vec3 &_up, glm::vec3 &_direction,float _size)
     : Camera(_center, _up, _direction), size(_size){
 

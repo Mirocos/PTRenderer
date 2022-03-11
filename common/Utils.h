@@ -11,6 +11,11 @@ namespace Utils {
         return max(min(value, maxv), minv);
     }
 
+    template<typename T>
+    T lerp(T lh, T rh, float t){
+        return (1 - t) * lh + t * rh;
+    }
+
 }
 
 #endif //PTRENDERER_UTILS_H

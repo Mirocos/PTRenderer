@@ -12,6 +12,12 @@ namespace PTRenderer{
         glm::normalize(normal);
     }
 
+    Intersection::Intersection() :material(nullptr) {
+        normal = glm::vec3(1.f);
+        intersection_point = glm::vec3(1.f);
+        t = INFINITY;
+    }
+
     Intersection::Intersection(const Intersection &hit) {
         *this = hit;
     }
@@ -27,6 +33,8 @@ namespace PTRenderer{
     void Intersection::set_normal(const glm::vec3 &_normal) {
         normal = _normal;
     }
+
+
 
 
 }
