@@ -15,7 +15,7 @@ namespace PTRenderer{
         Material(const glm::vec3& _diffuse_color);
 
         const glm::vec3& get_diffuse_color() { return diffuse_color; }
-        virtual glm::vec3 shade(const glm::vec3& normal, const glm::vec3& light_dir, const glm::vec3& view_dir) = 0;
+        virtual glm::vec3 shade(const glm::vec3& normal, const glm::vec3& light_dir, const glm::vec3& view_dir) { return diffuse_color; };
 
         virtual bool reflectable() { return true; }
         virtual bool refractable() { return false; }

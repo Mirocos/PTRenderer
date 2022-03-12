@@ -8,7 +8,7 @@
 namespace Utils {
     template<typename T>
     T clamp(T value, T minv, T maxv) {
-        return max(min(value, maxv), minv);
+        return std::max(std::min(value, maxv), minv);
     }
 
     template<typename T>
