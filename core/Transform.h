@@ -117,9 +117,9 @@ Transform RotateX(float theta);
 Transform RotateY(float theta);
 Transform RotateZ(float theta);
 Transform Rotate(float theta, const Vector3f &axis);
-Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up);
-Transform Orthographic(float znear, float zfar);
-Transform Perspective(float fov, float znear, float zfar);
+//Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up);
+//Transform Orthographic(float znear, float zfar);
+//Transform Perspective(float fov, float znear, float zfar);
 
 
 inline Point3f Transform::TransformPoint(const Point3f& p) const {

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "Primitives.h"
+#include "Utils.h"
 const float INTERSECTION_EPSILON = 1e-4;
 
 namespace PTRenderer{
@@ -125,4 +126,90 @@ namespace PTRenderer{
 
 
 
+    BoundingBox::BoundingBox(): pmin(INFINITY), pmax(-INFINITY) {
+
+    }
+
+    BoundingBox::BoundingBox(const glm::vec3 &_pmin, const glm::vec3 &_pmax): pmin(glm::min(_pmin, _pmax)), pmax(glm::max(_pmin, _pmax)) {
+
+    }
+
+    BoundingBox BoundingBox::Union(const BoundingBox &b, const glm::vec3 &p) {
+        return BoundingBox(glm::min(b.pmin, p),
+                           glm::max(b.pmax, p));
+    }
+
+    BoundingBox BoundingBox::Union(const BoundingBox &b1, const BoundingBox &b2) {
+        return BoundingBox(glm::min(b1.pmin, b2.pmin),
+                           glm::min(b1.pmax, b2.pmax));
+    }
+
+    BoundingBox BoundingBox::Intersect(const BoundingBox &b1, const BoundingBox &b2) {
+        return BoundingBox(glm::max(b1.pmin, b2.pmin),
+                           glm::min(b1.pmax, b2.pmax));
+    }
+
+    bool BoundingBox::Overlaps(const BoundingBox &b1, const BoundingBox &b2) {
+        bool x = (b1.pmax.x >= b2.pmin.x) && (b1.pmin.x <= b2.pmax.x);
+        bool y = (b1.pmax.y >= b2.pmin.y) && (b1.pmin.y <= b2.pmax.y);
+        bool z = (b1.pmax.z >= b2.pmin.z) && (b1.pmin.z <= b2.pmax.z);
+        return (x && y && z);
+    }
+
+    bool BoundingBox::Inside(const glm::vec3& p, const BoundingBox &b){
+        return (p.x >= b.pmin.x && p.x <= b.pmax.x &&
+                p.y >= b.pmin.y && p.y <= b.pmax.y &&
+                p.z >= b.pmin.z && p.z <= b.pmax.z);
+    }
+
+    bool BoundingBox::InsideExclusive(const glm::vec3 &p, const BoundingBox &b) {
+        return (p.x >= b.pmin.x && p.x < b.pmax.x &&
+                p.y >= b.pmin.y && p.y < b.pmax.y &&
+                p.z >= b.pmin.z && p.z < b.pmax.z);
+        return false;
+    }
+
+    BoundingBox BoundingBox::Expand(const BoundingBox &b, const glm::vec3 &delta) {
+        return BoundingBox(b.pmin - delta,
+                           b.pmax + delta);
+    }
+
+    float BoundingBox::SurfaceArea() const {
+        glm::vec3 d = Diagonal();
+        return 2 * (d.x * d.y + d.y * d.z + d.z * d.x);
+    }
+
+    float BoundingBox::Volume() const {
+        glm::vec3 d = Diagonal();
+        return d.x * d.y * d.z;
+    }
+
+    int BoundingBox::MaximumExtent() const {
+        glm::vec3 d = Diagonal();
+        if(d.x > d.y && d.x > d.z)
+            return 0;
+        else if(d.y > d.z)
+            return 1;
+        else
+            return 2;
+    }
+
+    glm::vec3 BoundingBox::Lerp(const glm::vec3 &t) const {
+        return glm::vec3(Utils::lerp(pmin.x, pmax.x, t.x),
+                         Utils::lerp(pmin.y, pmax.y, t.y),
+                         Utils::lerp(pmin.z, pmax.z, t.z));
+    }
+
+    glm::vec3 BoundingBox::Offset(const glm::vec3 &p) const {
+        glm::vec3 o = p - pmin;
+        if(pmax.x > pmin.x) o.x /= pmax.x - pmin.x;
+        if(pmax.y > pmin.y) o.y /= pmax.y - pmin.y;
+        if(pmax.z > pmin.z) o.z /= pmax.z - pmin.z;
+        return o;
+    }
+
+    void BoundingBox::BoundingSphere(glm::vec3 &center, float &radius) {
+        center = (pmin + pmax) * 0.5f;
+        radius = Inside(center, *this)? glm::length(center - pmax) : 0.f;
+    }
 }

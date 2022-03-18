@@ -93,35 +93,35 @@ Transform Rotate(float theta, const Vector3f &axis){
     return Transform(m, glm::transpose(m));
 }
 
-Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up){
-    Matrix4x4 cameraToWorld(1.f);
-
-    cameraToWorld[0][3] = pos.x;
-    cameraToWorld[1][3] = pos.y;
-    cameraToWorld[2][3] = pos.z;
-    cameraToWorld[3][3] = 1.f;
-
-    Vector3f dir = glm::normalize(look - pos);
-
-    // TODO robust check
-
-    Vector3f right = glm::normalize(glm::cross(glm::normalize(up), dir));
-    Vector3f newUp = glm::normalize(glm::cross(dir, right));
-
-    cameraToWorld[0][0] = right.x;
-    cameraToWorld[1][0] = right.y;
-    cameraToWorld[2][0] = right.z;
-    cameraToWorld[3][0] = 0.f;
-
-    cameraToWorld[0][1] = newUp.x;
-    cameraToWorld[1][1] = newUp.y;
-    cameraToWorld[2][1] = newUp.z;
-    cameraToWorld[3][1] = 0.f;
-
-    cameraToWorld[0][2] = dir.x;
-    cameraToWorld[1][2] = dir.y;
-    cameraToWorld[2][2] = dir.z;
-    cameraToWorld[3][2] = 0.f;
-
-    return Transform(glm::inverse(cameraToWorld), cameraToWorld);
-}
+//Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up){
+//    Matrix4x4 cameraToWorld(1.f);
+//
+//    cameraToWorld[0][3] = pos.x;
+//    cameraToWorld[1][3] = pos.y;
+//    cameraToWorld[2][3] = pos.z;
+//    cameraToWorld[3][3] = 1.f;
+//
+//    Vector3f dir = glm::normalize(look - pos);
+//
+//    // TODO robust check
+//
+//    Vector3f right = glm::normalize(glm::cross(glm::normalize(up), dir));
+//    Vector3f newUp = glm::normalize(glm::cross(dir, right));
+//
+//    cameraToWorld[0][0] = right.x;
+//    cameraToWorld[1][0] = right.y;
+//    cameraToWorld[2][0] = right.z;
+//    cameraToWorld[3][0] = 0.f;
+//
+//    cameraToWorld[0][1] = newUp.x;
+//    cameraToWorld[1][1] = newUp.y;
+//    cameraToWorld[2][1] = newUp.z;
+//    cameraToWorld[3][1] = 0.f;
+//
+//    cameraToWorld[0][2] = dir.x;
+//    cameraToWorld[1][2] = dir.y;
+//    cameraToWorld[2][2] = dir.z;
+//    cameraToWorld[3][2] = 0.f;
+//
+//    return Transform(glm::inverse(cameraToWorld), cameraToWorld);
+//}

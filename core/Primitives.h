@@ -12,14 +12,19 @@
 
 namespace PTRenderer{
 
+
+
     class Primitives {
 
     public:
+
         enum ObjectType{
             TRIANGLE,
             PLANE,
             SPHERE,
-            TRIANGLE_MESH
+            TRIANGLE_MESH,
+            BOUNDINGBOX,
+            BVH
         };
 
         Primitives() = delete;
@@ -66,6 +71,39 @@ namespace PTRenderer{
 
         glm::vec3 a, b, c;
         glm::vec3 normal;
+    };
+
+
+
+
+    class BoundingBox{
+    public:
+        BoundingBox();
+        BoundingBox(const glm::vec3& _pmin, const glm::vec3& _pmax);
+
+        BoundingBox Union(const BoundingBox& b1, const BoundingBox& b2);
+        BoundingBox Union(const BoundingBox& b, const glm::vec3& p);
+        BoundingBox Intersect(const BoundingBox& b1, const BoundingBox& b2);
+
+        bool Overlaps(const BoundingBox& b1, const BoundingBox& b2);
+        bool Inside(const glm::vec3& p, const BoundingBox& b);
+        bool InsideExclusive(const glm::vec3& p, const BoundingBox& b);
+
+
+        inline BoundingBox Expand(const BoundingBox& b, const glm::vec3& delta);
+
+
+        glm::vec3 Offset(const glm::vec3& p) const;
+        glm::vec3 Lerp(const glm::vec3& t) const;
+        glm::vec3 Diagonal() const { return pmax - pmin; }
+        float SurfaceArea() const;
+        float Volume() const;
+        int MaximumExtent() const;
+
+        void BoundingSphere(glm::vec3& center, float& radius);
+
+
+        glm::vec3 pmin, pmax;
     };
 
 

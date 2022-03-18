@@ -19,13 +19,17 @@ int main() {
 //    Transform t(data);
 //    t.Print();
 
-    Matrix4x4 m(1.f);
-    for(int i = 0; i < 4; ++i){
-        for(int j = 0; j < 4; ++j){
-            printf("%f%s", m[i][j], j == 3? "\n" : " ");
-        }
-    }
-    printf("\n");
+//    Matrix4x4 m(1.f);
+//    for(int i = 0; i < 4; ++i){
+//        for(int j = 0; j < 4; ++j){
+//            printf("%f%s", m[i][j], j == 3? "\n" : " ");
+//        }
+//    }
+//    printf("\n");
+
+    glm::vec3 a(0.5, 0.6, 0.9);
+    glm::vec3 b(0.7, 0.4, 0.1);
+    std::cout << glm::to_string(glm::min(a, b)) << std::endl;
 
 #endif
 
@@ -43,7 +47,7 @@ int main() {
 //    std::shared_ptr<PTRenderer::Light> light = std::make_shared<PTRenderer::DirectionLight>(glm::vec3(-0.5f, -0.5f, -1.f), glm::vec3(0.9f, 0.9f, 0.9f));
 //
 //    scene->add_model(model);
-//    renderer.draw();
+    renderer.draw();
 ////    scene->add_primitives(tri1);
 //    scene->add_light(light);
 //    Image image(WIDTH, HEIGHT);
