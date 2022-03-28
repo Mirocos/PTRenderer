@@ -141,7 +141,7 @@ namespace PTRenderer{
 
     BoundingBox BoundingBox::Union(const BoundingBox &b1, const BoundingBox &b2) {
         return BoundingBox(glm::min(b1.pmin, b2.pmin),
-                           glm::min(b1.pmax, b2.pmax));
+                           glm::max(b1.pmax, b2.pmax));
     }
 
     BoundingBox BoundingBox::Intersect(const BoundingBox &b1, const BoundingBox &b2) {

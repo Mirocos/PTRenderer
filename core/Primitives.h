@@ -12,7 +12,35 @@
 
 namespace PTRenderer{
 
+    class BoundingBox {
+    public:
+        BoundingBox();
+        BoundingBox(const glm::vec3& _pmin, const glm::vec3& _pmax);
 
+        static BoundingBox Union(const BoundingBox& b1, const BoundingBox& b2);
+        static BoundingBox Union(const BoundingBox& b, const glm::vec3& p);
+        static BoundingBox Intersect(const BoundingBox& b1, const BoundingBox& b2);
+
+        static bool Overlaps(const BoundingBox& b1, const BoundingBox& b2);
+        static bool Inside(const glm::vec3& p, const BoundingBox& b);
+        static bool InsideExclusive(const glm::vec3& p, const BoundingBox& b);
+
+
+        static inline BoundingBox Expand(const BoundingBox& b, const glm::vec3& delta);
+
+
+        glm::vec3 Offset(const glm::vec3& p) const;
+        glm::vec3 Lerp(const glm::vec3& t) const;
+        glm::vec3 Diagonal() const { return pmax - pmin; }
+        float SurfaceArea() const;
+        float Volume() const;
+        int MaximumExtent() const;
+
+        void BoundingSphere(glm::vec3& center, float& radius);
+
+
+        glm::vec3 pmin, pmax;
+    };
 
     class Primitives {
 
@@ -31,11 +59,13 @@ namespace PTRenderer{
         Primitives(const ObjectType& _type, std::shared_ptr<Material> _material);
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin) = 0;
         virtual glm::vec3 shade() = 0;
+        virtual BoundingBox GetBoundingBox() { return box; };
 
 
     protected:
         ObjectType type;
         std::shared_ptr<Material> material;
+        BoundingBox box;
 
     };
 
@@ -76,35 +106,7 @@ namespace PTRenderer{
 
 
 
-    class BoundingBox{
-    public:
-        BoundingBox();
-        BoundingBox(const glm::vec3& _pmin, const glm::vec3& _pmax);
 
-        BoundingBox Union(const BoundingBox& b1, const BoundingBox& b2);
-        BoundingBox Union(const BoundingBox& b, const glm::vec3& p);
-        BoundingBox Intersect(const BoundingBox& b1, const BoundingBox& b2);
-
-        bool Overlaps(const BoundingBox& b1, const BoundingBox& b2);
-        bool Inside(const glm::vec3& p, const BoundingBox& b);
-        bool InsideExclusive(const glm::vec3& p, const BoundingBox& b);
-
-
-        inline BoundingBox Expand(const BoundingBox& b, const glm::vec3& delta);
-
-
-        glm::vec3 Offset(const glm::vec3& p) const;
-        glm::vec3 Lerp(const glm::vec3& t) const;
-        glm::vec3 Diagonal() const { return pmax - pmin; }
-        float SurfaceArea() const;
-        float Volume() const;
-        int MaximumExtent() const;
-
-        void BoundingSphere(glm::vec3& center, float& radius);
-
-
-        glm::vec3 pmin, pmax;
-    };
 
 
 

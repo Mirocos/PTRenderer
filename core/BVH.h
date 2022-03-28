@@ -7,19 +7,22 @@
 #include "Primitives.h"
 
 using namespace PTRenderer;
-
-enum class SplitMethod{
-    NAIVE,
-    SAH,
-    HLBVH,
-    Middle,
-    EqualCounts
-};
+struct BVHBuildNode;
+struct BVHPrimitiveInfo;
 
 class BVHAccel {
 public:
-    BVHAccel(const std::vector<std::shared_ptr<Primitives>>, int maxPrimsInNode=1, SplitMethod splitMethod=SplitMethod::NAIVE);
 
+    enum class SplitMethod{
+        SAH,
+        HLBVH,
+        Middle,
+        EqualCounts
+    };
+
+    BVHAccel(const std::vector<std::shared_ptr<Primitives>>& p, int maxPrimsInNode=1, SplitMethod splitMethod=SplitMethod::Middle);
+
+    BVHBuildNode* recursiveBuild(std::vector<BVHPrimitiveInfo>& primitiveInfo, int start, int end, int *totalNodes, std::vector<std::shared_ptr<Primitives>>& orderedPrims);
 
 private:
     const int maxPrimsInNode;
