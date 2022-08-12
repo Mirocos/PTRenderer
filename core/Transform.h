@@ -44,8 +44,13 @@ public:
                 printf("%f%s", m[i][j], j == 3? "\n" : " ");
             }
         }
-        printf("\n");
-    }
+        printf("\n\n");
+        for(int i = 0; i < 4; ++i){
+            for(int j = 0; j < 4; ++j){
+                printf("%f%s", mInv[i][j], j == 3? "\n" : " ");
+            }
+        }
+        printf("\n");    }
 
     friend Transform Inverse(const Transform &t) {
         return Transform(t.mInv, t.m);
@@ -109,6 +114,7 @@ private:
 };
 
 
+Vector3f Cross(const Vector3f& v1, const Vector3f& v2);
 
 Transform Translate(const Vector3f &delta);
 Transform Scale(float x, float y, float z);
@@ -123,7 +129,7 @@ Transform Perspective(float fov, float znear, float zfar);
 
 
 inline Point3f Transform::TransformPoint(const Point3f& p) const {
-    glm::vec4 p_h = m * glm::vec4(p, 1.f);
+    glm::vec4 p_h =  m * glm::vec4(p, 1.f) ;
 
     // TODO optimize division operation
     return Point3f(p_h.x, p_h.y, p_h.z) / p_h.w;

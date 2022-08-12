@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include "Intersection.h"
 #include "iostream"
+#include "Macrodefine.h"
 
 namespace PTRenderer{
 
@@ -19,18 +20,21 @@ namespace PTRenderer{
             TRIANGLE,
             PLANE,
             SPHERE,
+            RECTANGLE,
             TRIANGLE_MESH
         };
 
         Primitives() = delete;
         Primitives(const ObjectType& _type, std::shared_ptr<Material> _material);
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin) = 0;
+//        virtual bool HasEmission() = 0;
         virtual glm::vec3 shade() = 0;
 
 
     protected:
         ObjectType type;
         std::shared_ptr<Material> material;
+        bool emitted;
 
     };
 
@@ -66,6 +70,24 @@ namespace PTRenderer{
 
         glm::vec3 a, b, c;
         glm::vec3 normal;
+    };
+
+
+
+    class Rectangle : public Primitives{
+    public:
+        Rectangle(const glm::vec3& _a, const glm::vec3& _b, const glm::vec3& _c, const glm::vec3& _d, std::shared_ptr<Material> _material);
+
+
+        virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
+        virtual glm::vec3 shade();
+
+    private:
+        glm::vec3 a, b, c, d;
+
+        // represent
+        glm::vec3 normal;
+        float D;
     };
 
 

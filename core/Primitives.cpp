@@ -9,7 +9,7 @@ const float INTERSECTION_EPSILON = 1e-4;
 namespace PTRenderer{
 
     Primitives::Primitives(const ObjectType &_type, std::shared_ptr<Material> _material)
-    : type(_type), material(_material){
+    : type(_type), material(_material), emitted(false){
 
     }
 
@@ -123,6 +123,69 @@ namespace PTRenderer{
     }
 
 
+    Rectangle::Rectangle(const glm::vec3 &_a, const glm::vec3 &_b, const glm::vec3 &_c, const glm::vec3 &_d,
+                         std::shared_ptr<Material> _material)
+                         : Primitives(Primitives::RECTANGLE, _material)
+                         , a(_a), b(_b), c(_c), d(_d){
+        glm::vec3 ab = glm::normalize(b - a);
+        glm::vec3 ad = glm::normalize(d - a );
+        normal = glm::normalize(glm::cross(ab, ad));
+        D = -glm::dot(normal, a);
+    }
+
+    bool Rectangle::intersect(const Ray &ray, Intersection &hit, float tmin) {
+        auto ro = ray.get_origin();
+        auto rd = ray.get_direction();
+
+        if(glm::dot(rd, normal) == 0)
+                return false;
+
+        float t = (-D - glm::dot(ro, normal )) / glm::dot(rd, normal);
+
+        if( t < tmin )
+            return false;
+
+        auto p = ro + t * rd;
+
+
+        auto ab = b - a;
+        auto bc = c - b;
+        auto cd = d - c;
+        auto da = a - d;
+
+        auto ap = p - a;
+        auto bp = p - b;
+        auto cp = p - c;
+        auto dp = p - d;
+
+        auto n1 = glm::cross(ab, ap);
+        auto n2 = glm::cross(bc, bp);
+        auto n3 = glm::cross(cd, cp);
+        auto n4 = glm::cross(da, dp);
+
+
+
+        if( glm::dot(n1, normal) < 0.f || glm::dot(n2, normal) < 0.f || glm::dot(n3, normal) < 0.f || glm::dot(n4, normal) < 0.f)
+            return false;
+
+        if(t < hit.get_t() + INTERSECTION_EPSILON){
+            hit.set_t(t);
+            hit.set_intersection(p);
+            hit.set_material(material);
+            hit.set_normal(normal);
+        }
+
+
+
+
+
+
+        return true;
+    }
+
+    glm::vec3 Rectangle::shade() {
+        return material->get_diffuse_color();
+    }
 
 
 }

@@ -3,10 +3,13 @@
 //
 
 #include "Renderer.h"
+#include "glm/gtx/string_cast.hpp"
 
 const unsigned  int SCR_WIDTH = 800;
 const unsigned  int SCR_HEIGHT = 800;
-const std::string DataDir = "/home/zeming/CLionProjects/path_tracing/shaders/";
+const std::string DataDir = "D:\\study\\code\\PTRenderer/shaders/";
+
+
 
 
 
@@ -15,16 +18,19 @@ void Renderer::draw() {
     std::string frag_path = DataDir+"frag.glsl";
     Shader shader(vert_path.c_str(), frag_path.c_str());
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), 1.f, 1.f, 400.f);
-//    glm::mat4 view = scene->get_view_mtx();
+    glm::mat4 projection = glm::perspective(glm::radians(45.f), 1.f, 1.f, 100.f);
+    glm::mat4 view = scene->get_view_mtx();
     glm::mat4 model = glm::mat4(1.f);
-//    model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+//    model = glm::translate(model, glm::vec3(-1.f, -0.5f, -10.f));
 
+
+    glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window)){
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
         glm::mat4 view = scene->get_view_mtx();
+//        std::cout << glm::to_string(view) << std::endl;
         shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
@@ -77,7 +83,7 @@ void Renderer::processInput(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 0.0005f;
+    float cameraSpeed = 0.5f;
     float delta_x = 0.f, delta_y = 0.f, delta_z = 0.f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
         delta_z -= cameraSpeed;

@@ -5,6 +5,8 @@
 #ifndef PTRENDERER_UTILS_H
 #define PTRENDERER_UTILS_H
 
+#include <algorithm>
+
 namespace Utils {
     template<typename T>
     T clamp(T value, T minv, T maxv) {

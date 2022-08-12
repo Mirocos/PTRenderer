@@ -67,6 +67,7 @@ Transform RotateZ(float theta){
                 sinTheta, cosTheta, 0.f, 0.f,
                 0.f, 0.f, 1.f, 0.f,
                 0.f, 0.f, 0.f, 1.f);
+    return Transform(m, glm::transpose(m));
 }
 
 Transform Rotate(float theta, const Vector3f &axis){
@@ -105,8 +106,8 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up){
 
     // TODO robust check
 
-    Vector3f right = glm::normalize(glm::cross(glm::normalize(up), dir));
-    Vector3f newUp = glm::normalize(glm::cross(dir, right));
+    Vector3f right = glm::normalize(Cross(glm::normalize(up), dir));
+    Vector3f newUp = glm::normalize(Cross(dir, right));
 
     cameraToWorld[0][0] = right.x;
     cameraToWorld[1][0] = right.y;
@@ -123,5 +124,12 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up){
     cameraToWorld[2][2] = dir.z;
     cameraToWorld[3][2] = 0.f;
 
-    return Transform(glm::inverse(cameraToWorld), cameraToWorld);
+    return Transform(glm::inverse(cameraToWorld), cameraToWorld );
+}
+
+Vector3f Cross(const Vector3f& v1, const Vector3f& v2){
+    double v1x = v1.x, v1y = v1.y, v1z = v1.z;
+    double v2x = v2.x, v2y = v2.y, v2z = v2.z;
+    return Vector3f ((v1y * v2z) - (v1z * v2y), (v1z * v2x) - (v1x * v2z),
+                      (v1x * v2y) - (v1y * v2x));
 }

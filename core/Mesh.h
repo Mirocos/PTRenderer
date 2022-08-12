@@ -49,7 +49,9 @@ public:
         this->indices = indices;
         this->textures = textures;
         VAO = 0;
+#if REAL_TIME_SHOW
         SetupMesh();
+#endif
     }
 
 

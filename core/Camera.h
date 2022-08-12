@@ -15,7 +15,7 @@ namespace PTRenderer{
     class Camera {
     public:
         Camera() = delete;
-        Camera(const glm::vec3& _center, glm::vec3& _up, glm::vec3& _direction);
+        Camera(const glm::vec3& _eye, const glm::vec3& _pos, const glm::vec3& _up);
         virtual Ray generate_ray(const glm::vec2& point) = 0;
         virtual float get_min_t() const = 0;
 
@@ -26,9 +26,11 @@ namespace PTRenderer{
         glm::vec3 get_view_dir(const glm::vec3& p);
     protected:
         glm::vec3 center;
+        glm::vec3 pos;
         glm::vec3 up;
         glm::vec3 direction;
         glm::vec3 horizontal;
+
     };
 
 
@@ -37,7 +39,7 @@ namespace PTRenderer{
     class OrthographicCamera : public Camera{
     public:
         OrthographicCamera() = delete;
-        OrthographicCamera(const glm::vec3& _center, glm::vec3& _up, glm::vec3& _direction, float _size);
+        OrthographicCamera(const glm::vec3& _eye, const glm::vec3& _pos, const glm::vec3& _up, float _size);
 
         virtual Ray generate_ray(const glm::vec2& point);
         virtual float get_min_t() const;
@@ -61,7 +63,7 @@ namespace PTRenderer{
     class PerspectiveCamera : public Camera{
     public:
         PerspectiveCamera() = delete;
-        PerspectiveCamera(const glm::vec3& _center, glm::vec3& _up, glm::vec3& _direction, float _angle);
+        PerspectiveCamera(const glm::vec3& _eye, const glm::vec3& _pos, const glm::vec3& _up, float _angle);
 
         virtual Ray generate_ray(const glm::vec2& point);
         virtual float get_min_t() const;

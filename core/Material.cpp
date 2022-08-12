@@ -2,9 +2,13 @@
 // Created by zeming on 2021/12/17.
 //
 
+
 #include "Material.h"
 #include "glm/geometric.hpp"
 #include "Utils.h"
+
+#define M_PI 3.14159265358979323846
+
 namespace PTRenderer{
 
     Material::Material(const glm::vec3 &_diffuse_color)
