@@ -10,6 +10,7 @@
 #include "Intersection.h"
 #include "iostream"
 #include "Macrodefine.h"
+#include "Bound3.h"
 
 namespace PTRenderer{
 
