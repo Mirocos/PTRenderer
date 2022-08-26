@@ -9,6 +9,7 @@
 #include "Model.h"
 #include "Light.h"
 #include "Camera.h"
+#include "BVH.h"
 namespace PTRenderer{
 
     class Scene {
@@ -24,7 +25,7 @@ namespace PTRenderer{
             cutoff_bounce = 3;
         };
 
-        explicit Scene(std::shared_ptr<Camera>  _camera) : camera(std::move(_camera)){
+        explicit Scene(std::shared_ptr<Camera>  _camera) : camera(std::move(_camera)), bvh(nullptr){
             objects.resize(0);
             models.resize(0);
             lights.resize(0);
@@ -50,6 +51,7 @@ namespace PTRenderer{
         glm::vec3 trace_ray(const Ray&ray, float weight, int bounce);
 
 
+        void buildBVH();
 
         std::vector<std::shared_ptr<Model>> models;
 
@@ -58,6 +60,7 @@ namespace PTRenderer{
         std::vector<std::shared_ptr<Primitives>> objects;
         std::vector<std::shared_ptr<Light>> lights;
         std::shared_ptr<Camera> camera;
+        std::shared_ptr<BVHAccel> bvh;
 
         float cutoff_wight;
         int cutoff_bounce;

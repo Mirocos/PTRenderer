@@ -31,10 +31,13 @@ namespace PTRenderer{
 //        virtual bool HasEmission() = 0;
         virtual glm::vec3 shade() = 0;
 
+        Bound3 getBounds() const { return bbx; }
+
 
     protected:
         ObjectType type;
         std::shared_ptr<Material> material;
+        Bound3 bbx;
         bool emitted;
 
     };

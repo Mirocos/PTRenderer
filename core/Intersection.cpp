@@ -8,11 +8,11 @@
 namespace PTRenderer{
 
     Intersection::Intersection(std::shared_ptr<Material> _material, glm::vec3 point, glm::vec3 _normal, float _t)
-    : material(_material), intersection_point(point), normal(_normal), t(_t){
+    : material(_material), intersection_point(point), normal(_normal), t(_t), happened(false){
         glm::normalize(normal);
     }
 
-    Intersection::Intersection() :material(nullptr) {
+    Intersection::Intersection() :material(nullptr), happened(false) {
         normal = glm::vec3(1.f);
         intersection_point = glm::vec3(1.f);
         t = INFINITY;

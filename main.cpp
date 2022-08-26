@@ -48,14 +48,14 @@ int main() {
     float angle = 45.f;
 //
     std::shared_ptr<PTRenderer::Primitives> tri1 = std::make_shared<PTRenderer::Triangle>(glm::vec3(-0.5f, 0.0f, -3.f),
-                                                                                          glm::vec3(0.5f, 0.f, -3.f),
+                                                                                          glm::vec3(0.5f, 0.f, -4.f),
                                                                                           glm::vec3(0.f, 1.f, -3.f),
                                                                                           std::make_shared<PTRenderer::Material>(
                                                                                                   glm::vec3(1.f, 0.f,
                                                                                                             0.f)));
 
     std::shared_ptr<PTRenderer::Primitives> rect1 = std::make_shared<PTRenderer::Rectangle>(glm::vec3(-0.5f, 0.0f, -4.f),
-                                                                                            glm::vec3(0.5f, 0.f, -4.f),
+                                                                                            glm::vec3(0.5f, 0.f, -5.f),
                                                                                             glm::vec3(0.5f, 1.f, -4.f),
                                                                                             glm::vec3(-0.5f, 1.f, -4.f),
                                                                                             std::make_shared<PTRenderer::Material>(
@@ -75,12 +75,18 @@ int main() {
     scene->add_primitives(tri1);
     scene->add_primitives(rect1);
     scene->add_light(light);
+
+    scene->buildBVH();
+
     Image image(WIDTH, HEIGHT);
     image.SetAllPixels(glm::vec3(0.f, 0.f, 0.f));
     float total = 1.f * WIDTH * HEIGHT;
 
     for (int x = 0; x < WIDTH; ++x) {
         for (int y = 0; y < HEIGHT; ++y) {
+            if(x == WIDTH / 2 && y == HEIGHT / 2){
+                int n = 0;
+            }
             float u = (float)(1.f * x + 0.5f) / (float) (WIDTH);
             float v = (float)(1.f * y + 0.5f)/ (float) (HEIGHT);
             PTRenderer::Ray ray = scene->generate_ray(glm::vec2(u, v));
@@ -90,8 +96,6 @@ int main() {
             PTRenderer::Intersection hit(material, hit_point, glm::vec3(0.f, 0.f, 0.f), INFINITY);
             if (scene->intersect(ray, hit, scene->get_min_t())) {
                 image.SetPixel(y, x, scene->get_color(hit));
-
-
             }
         }
     }

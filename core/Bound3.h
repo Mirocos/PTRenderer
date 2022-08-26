@@ -5,6 +5,7 @@
 #ifndef PTRENDERER_BOUND3_H
 #define PTRENDERER_BOUND3_H
 #include "glm/glm.hpp"
+#include "Ray.h"
 #include <array>
 
 using namespace PTRenderer;

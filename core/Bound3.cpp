@@ -3,6 +3,7 @@
 //
 
 #include "Bound3.h"
+#include "Ray.h"
 
 Bound3::Bound3() {
     float minNum = std::numeric_limits<float>::lowest();
@@ -85,9 +86,8 @@ bool Bound3::intersectBound(const Ray &ray, const glm::vec3 &invDir, const std::
     // invDir: ray direction(x,y,z), invDir=(1.0/x,1.0/y,1.0/z), use this because Multiply is faster that Division
     // dirIsNeg: ray direction(x,y,z), dirIsNeg=[int(x>0),int(y>0),int(z>0)], use this to simplify your logic
 
-    glm::vec3 dir = ray.direction;
-    glm::vec3 ori = ray.origin;
-
+    glm::vec3 dir = ray.get_direction();
+    glm::vec3 ori = ray.get_origin();
     float tmin =  ((*this)[1-dirIsNeg[0]].x - ori.x) * invDir.x;
     float tmax = ((*this)[dirIsNeg[0]].x - ori.x) * invDir.x;
 

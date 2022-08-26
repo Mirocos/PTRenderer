@@ -21,8 +21,14 @@ bool PTRenderer::Scene::intersect(const PTRenderer::Ray &ray, PTRenderer::Inters
     bool is_intersected = false;
 
     // [TODO]  construct BVH acceleration construction
-    for(const auto& obj : objects){
-        is_intersected |= obj->intersect(ray, hit, tmin);
+    if(bvh){
+        hit = bvh->Intersect(ray);
+        is_intersected = hit.happened;
+    }
+    else {
+        for (const auto &obj: objects) {
+            is_intersected |= obj->intersect(ray, hit, tmin);
+        }
     }
     return is_intersected;
 }
@@ -76,11 +82,17 @@ glm::vec3 PTRenderer::Scene::trace_ray(const PTRenderer::Ray &ray, float weight,
         glm::vec3 R = reflect(-L, N);
         Ray reflect_ray(hit.get_hit_point(), R);
 
+
     }
 
 
 
 
     return glm::vec3();
+}
+
+void Scene::buildBVH() {
+    printf(" - Generating BVH...\n\n");
+    this->bvh = std::make_shared<BVHAccel>(objects, 1, BVHAccel::SplitMethod::NAIVE);
 }
 

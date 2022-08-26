@@ -17,11 +17,14 @@ namespace PTRenderer{
     Triangle::Triangle(const glm::vec3 &_a, const glm::vec3 &_b, const glm::vec3 &_c, std::shared_ptr<Material> _material)
     : Primitives(ObjectType::TRIANGLE, _material), a(_a), b(_b), c(_c){
         calculate_normal();
+        bbx = Bound3::Union(Bound3(_a, _b), _c);
     }
 
     Triangle::Triangle(const std::vector<glm::vec3> &points, std::shared_ptr<Material> _material)
     : Primitives(ObjectType::TRIANGLE, _material), a(points[0]), b(points[1]), c(points[2]){
         calculate_normal();
+
+        bbx = Bound3::Union(Bound3(a, b), c);
     }
 
     void Triangle::calculate_normal(){
@@ -73,6 +76,7 @@ namespace PTRenderer{
            hit.set_material(material);
            hit.set_intersection(hit_point);
            hit.set_normal(normal);
+           hit.hit();
            return true;
        }
 
@@ -131,6 +135,7 @@ namespace PTRenderer{
         glm::vec3 ad = glm::normalize(d - a );
         normal = glm::normalize(glm::cross(ab, ad));
         D = -glm::dot(normal, a);
+        bbx = Bound3::Union(Bound3(_a, _b), Bound3(_c, _d));
     }
 
     bool Rectangle::intersect(const Ray &ray, Intersection &hit, float tmin) {
@@ -173,6 +178,8 @@ namespace PTRenderer{
             hit.set_intersection(p);
             hit.set_material(material);
             hit.set_normal(normal);
+            hit.hit();
+            return true;
         }
 
 
@@ -180,7 +187,7 @@ namespace PTRenderer{
 
 
 
-        return true;
+        return false;
     }
 
     glm::vec3 Rectangle::shade() {

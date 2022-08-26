@@ -22,7 +22,7 @@ namespace PTRenderer {
         void set_normal(const glm::vec3& _normal);
         void set_t(float _t);
         void set_material(std::shared_ptr<Material> _material) { material = _material; }
-
+        void hit() { happened = true; }
 
         float get_t() { return t; }
         const std::shared_ptr<Material> get_material() const { return material; }
@@ -30,12 +30,13 @@ namespace PTRenderer {
         const glm::vec3& get_normal() const { return normal; }
 
 
-
+        bool happened;
     private:
         float t;                // current closest t value
         glm::vec3 intersection_point;
         glm::vec3 normal;
         std::shared_ptr<Material> material;
+
 
     };
 }

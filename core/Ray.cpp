@@ -8,6 +8,7 @@ namespace PTRenderer{
 
     Ray::Ray(const glm::vec3 &_origin, const glm::vec3 &_direction): origin(_origin), direction(_direction) {
         direction = glm::normalize(direction);
+        direction_inv = 1.f / direction;
     }
 
 

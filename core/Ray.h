@@ -19,7 +19,7 @@ namespace PTRenderer{
 
         const glm::vec3& get_origin() const { return origin; }
         const glm::vec3& get_direction() const { return direction; }
-
+        const glm::vec3& get_direction_inv() const { return direction_inv; }
         glm::vec3& get_origin() { return origin; }
         glm::vec3 get_direction() { return direction; }
 
@@ -27,6 +27,7 @@ namespace PTRenderer{
     private:
         glm::vec3 origin;
         glm::vec3 direction;
+        glm::vec3 direction_inv;
     };
 }
 
