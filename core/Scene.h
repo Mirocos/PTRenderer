@@ -47,7 +47,9 @@ namespace PTRenderer{
 
         float get_min_t() { return camera->get_min_t(); }
 
+
         bool intersect(const Ray& ray, Intersection& hit, float tmin);
+        glm::vec3 castRay(const Ray& ray, Intersection& hit, float tmin, int bounce);
         glm::vec3 trace_ray(const Ray&ray, float weight, int bounce);
 
 

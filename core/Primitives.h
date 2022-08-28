@@ -11,6 +11,7 @@
 #include "iostream"
 #include "Macrodefine.h"
 #include "Bound3.h"
+#include "Utils.h"
 
 namespace PTRenderer{
 
@@ -26,10 +27,13 @@ namespace PTRenderer{
         };
 
         Primitives() = delete;
-        Primitives(const ObjectType& _type, std::shared_ptr<Material> _material);
+        Primitives(const ObjectType& _type, const std::shared_ptr<Material>& _material);
         virtual bool intersect(const Ray& ray, Intersection& hit, float tmin) = 0;
-//        virtual bool HasEmission() = 0;
+        virtual bool hasEmission()  { return material->isEmissive(); };
+        virtual float getArea() const { return area; };
         virtual glm::vec3 shade() = 0;
+        virtual void sample(Intersection& p, float& pdf) = 0;
+
 
         Bound3 getBounds() const { return bbx; }
 
@@ -38,7 +42,8 @@ namespace PTRenderer{
         ObjectType type;
         std::shared_ptr<Material> material;
         Bound3 bbx;
-        bool emitted;
+        float area;
+
 
     };
 
@@ -52,8 +57,9 @@ namespace PTRenderer{
         Triangle(const std::vector<glm::vec3>& points, std::shared_ptr<Material> _material);
         Triangle(const Triangle& triangle);
 
-        virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
-        virtual glm::vec3 shade();
+        bool intersect(const Ray& ray, Intersection& hit, float tmin) override;
+        virtual glm::vec3 shade() override ;
+        virtual void sample(Intersection &p, float &pdf) override;
 
 
         const glm::vec3& x() const { return a; }
@@ -83,8 +89,9 @@ namespace PTRenderer{
         Rectangle(const glm::vec3& _a, const glm::vec3& _b, const glm::vec3& _c, const glm::vec3& _d, std::shared_ptr<Material> _material);
 
 
-        virtual bool intersect(const Ray& ray, Intersection& hit, float tmin);
-        virtual glm::vec3 shade();
+        bool intersect(const Ray& ray, Intersection& hit, float tmin) override;
+        virtual glm::vec3 shade() override ;
+        void sample(Intersection &p, float &pdf) override{}
 
     private:
         glm::vec3 a, b, c, d;

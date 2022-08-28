@@ -15,12 +15,12 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 namespace PTRenderer {
     class Model {
     public:
-        Model(std::string path);
+        explicit Model(std::string path);
         std::vector<Triangle> GetMesh();
 
         void Draw(Shader shader){
-            for(unsigned int i = 0; i < meshes.size(); i++){
-                meshes[i].Draw(shader);
+            for(auto & meshe : meshes){
+                meshe.Draw(shader);
             }
         }
 
@@ -31,6 +31,7 @@ namespace PTRenderer {
         Mesh ProcessMesh(aiMesh *mesh, const aiScene *scene);
         std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName);
         glm::vec3 aiVecToGlmVec(const aiVector3D& v);
+        glm::vec4 aiColor4DToGlmVec4(const aiColor4D& v);
 
         std::vector<Mesh> meshes;
         std::vector<Texture> textures_loaded;

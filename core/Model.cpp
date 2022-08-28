@@ -114,30 +114,60 @@ namespace PTRenderer{
         }
 
 
+        glm::vec4 diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
+        glm::vec4 specular = glm::vec4(0.f, 0.f, 0.f, 0.f);
+        glm::vec4 ambient = glm::vec4(0.f, 0.f, 0.f, 1.f);
+        glm::vec4 emission = glm::vec4(0.f, 0.f, 0.f, 0.f);
+        float shininess = 0.f;
+        float shininessStrength = 1.f;
+        float ior = 1.f;
+        unsigned int max = 1;
 
+        if(mesh->mMaterialIndex >= 0){
+            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+            aiColor4D aiDiffuse;
+            aiColor4D aiSpecular;
+            aiColor4D aiAmbient;
+            aiColor4D aiEmission;
+            if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &aiDiffuse))
+            {
+                diffuse = aiColor4DToGlmVec4(aiDiffuse);
+            }
+            if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &aiSpecular))
+            {
+                specular = aiColor4DToGlmVec4(aiSpecular);
+            }
+            if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiAmbient))
+            {
+                ambient = aiColor4DToGlmVec4(aiAmbient);
+            }
+            if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_EMISSIVE, &aiEmission))
+            {
+                emission = aiColor4DToGlmVec4(aiEmission);
+            }
 
-    if(mesh->mMaterialIndex >= 0){
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+            aiGetMaterialFloatArray(material, AI_MATKEY_SHININESS, &shininess, &max);
+            aiGetMaterialFloatArray(material, AI_MATKEY_SHININESS_STRENGTH, &shininessStrength, &max);
+            shininess *= shininessStrength;
 
+            aiGetMaterialFloatArray(material, AI_MATKEY_REFRACTI, &ior, &max);
 
+            // 1. diffuse maps
+            std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+            textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+            // 2. specular maps
+            std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+            // 3. normal maps
+            std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+            // 4. height maps
+            std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+            textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+        }
 
-
-        // 1. diffuse maps
-        std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        // 2. specular maps
-        std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-        // 3. normal maps
-        std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-        // 4. height maps
-        std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-        textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-    }
-
-
-        return Mesh(vertices, indices, textures);
+        shared_ptr<Material> material = make_shared<PhongMaterial>(ambient, diffuse, specular, emission, ior, shininess);
+        return Mesh(vertices, indices, textures, material);
     }
 
     std::vector<Texture> Model::LoadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {
@@ -179,6 +209,10 @@ namespace PTRenderer{
         }
 
         return tri_mesh;
+    }
+
+    glm::vec4 Model::aiColor4DToGlmVec4(const aiColor4D &v) {
+        return glm::vec4(v.r, v.g, v.b, v.a);
     }
 
 

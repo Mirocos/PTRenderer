@@ -41,11 +41,11 @@ int main() {
 #endif
 
 
-    Vec3f center = Vec3f(0.f, 0.f, 0.f);
-    Vec3f pos = Vec3f(0.f, 0.f, -1.f);
+    Vec3f center = Vec3f(0.f, 1.1f, 2.5f);
+    Vec3f pos = Vec3f(0.f, 1.f, -1.f);
     Vec3f up = Vec3f(0.f, 1.f, 0.f);
     Vec3f direction = Vec3f(0.f, 0.f, -1.f);
-    float angle = 45.f;
+    float angle = 60.f;
 //
     std::shared_ptr<PTRenderer::Primitives> tri1 = std::make_shared<PTRenderer::Triangle>(glm::vec3(-0.5f, 0.0f, -3.f),
                                                                                           glm::vec3(0.5f, 0.f, -4.f),
@@ -64,16 +64,17 @@ int main() {
 
     std::shared_ptr<PTRenderer::Camera> camera = std::make_shared<PTRenderer::PerspectiveCamera>(center, pos, up,
                                                                                                  angle);
+//    std::shared_ptr<PTRenderer::Camera> orth_camera = std::make_shared<PTRenderer::OrthographicCamera>(center, pos, up, 8.0);
     std::shared_ptr<PTRenderer::Scene> scene = std::make_shared<PTRenderer::Scene>(camera);
 //    Renderer renderer(scene, nullptr);
     std::shared_ptr<PTRenderer::Model> model = std::make_shared<PTRenderer::Model>("../scenes/cornell-box-original/");
     std::shared_ptr<PTRenderer::Light> light = std::make_shared<PTRenderer::DirectionLight>(
             glm::vec3(-0.5f, -0.5f, -1.f), glm::vec3(0.9f, 0.9f, 0.9f));
 
-//    scene->add_model(model);
+    scene->add_model(model);
 //    renderer.draw();
-    scene->add_primitives(tri1);
-    scene->add_primitives(rect1);
+//    scene->add_primitives(tri1);
+//    scene->add_primitives(rect1);
     scene->add_light(light);
 
     scene->buildBVH();
@@ -90,17 +91,25 @@ int main() {
             float u = (float)(1.f * x + 0.5f) / (float) (WIDTH);
             float v = (float)(1.f * y + 0.5f)/ (float) (HEIGHT);
             PTRenderer::Ray ray = scene->generate_ray(glm::vec2(u, v));
-            std::shared_ptr<PTRenderer::Material> material = std::make_shared<PTRenderer::Material>(
-                    glm::vec3(1.f, 0.f, 0.f));
-            glm::vec3 hit_point = glm::vec3(0.f, 0.f, 0.f);
-            PTRenderer::Intersection hit(material, hit_point, glm::vec3(0.f, 0.f, 0.f), INFINITY);
-            if (scene->intersect(ray, hit, scene->get_min_t())) {
-                image.SetPixel(y, x, scene->get_color(hit));
+            glm::vec3 pixelColor = glm::vec3(0.f);
+            for(int s = 0; s < SPP; ++s){
+                std::shared_ptr<PTRenderer::Material> material = std::make_shared<PTRenderer::Material>(
+                        glm::vec3(1.f, 0.f, 0.f));
+                glm::vec3 hitPoint = glm::vec3(0.f, 0.f, 0.f);
+                PTRenderer::Intersection hit(material, hitPoint, glm::vec3(0.f, 0.f, 0.f), INFINITY);
+                pixelColor += scene->castRay(ray, hit, scene->get_min_t(), 0);
+//                if(scene->intersect(ray, hit, scene->get_min_t())){
+//                    image.SetPixel(y, x, scene->get_color(hit));
+//                }
+
             }
+
+            pixelColor /= (float)(SPP);
+            image.SetPixel(y, x, pixelColor);
         }
     }
 
-    image.SaveTGA("veach.tga");
+    image.SaveTGA("cornell_box.tga");
     glfwTerminate();
     return 0;
 

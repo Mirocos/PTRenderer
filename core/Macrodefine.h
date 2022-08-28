@@ -7,4 +7,9 @@
 
 #define REAL_TIME_SHOW 0
 
+
+
+
+#define SPP 1
+
 #endif //PTRENDERER_MACRODEFINE_H

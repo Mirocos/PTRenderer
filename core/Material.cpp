@@ -3,21 +3,23 @@
 //
 
 
+#include <Utils.h>
 #include "Material.h"
 #include "glm/geometric.hpp"
-#include "Utils.h"
 
-#define M_PI 3.14159265358979323846
+
 
 namespace PTRenderer{
 
-    Material::Material(const glm::vec3 &_diffuse_color)
-    : diffuse_color(_diffuse_color){
+    Material::Material(const glm::vec3 &_diffuse_color, const glm::vec3& _emission_color)
+    : diffuse_color(_diffuse_color), emission_color(_emission_color){
 
     }
 
-    PhongMaterial::PhongMaterial(const glm::vec3 &_diffuse_color, const glm::vec3 &_specular_color, glm::vec3 _kd, glm::vec3 _ks, float _index_of_refraction, float _exp)
-        : Material(_diffuse_color), specular_color(_specular_color),  index_of_refraction(_index_of_refraction), exp(_exp), kd(_kd), ks(_ks){
+
+    PhongMaterial::PhongMaterial(const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular,  const glm::vec3& emission,
+                                 float ior, float shininess)
+                                 : Material(diffuse, emission), ka(ambient), kd(diffuse), ks(specular), index_of_refraction(ior), shininess(shininess){
 
     }
 
@@ -35,6 +37,8 @@ namespace PTRenderer{
 
         return  NdotL * diffuse_color * kd / (float)M_PI+ NdotH * std::pow(NdotH, 32.f) * specular_color * ks / (33.f / 2.f / (float)M_PI);
     }
+
+
 
     float CookTorrancetaMerial::chiGGX(float v) {
         return v > 0? 1 : 0;

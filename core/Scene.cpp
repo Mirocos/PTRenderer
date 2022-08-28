@@ -20,7 +20,7 @@ void PTRenderer::Scene::add_models(const std::vector<std::shared_ptr<Model>> &_m
 bool PTRenderer::Scene::intersect(const PTRenderer::Ray &ray, PTRenderer::Intersection &hit, float tmin) {
     bool is_intersected = false;
 
-    // [TODO]  construct BVH acceleration construction
+
     if(bvh){
         hit = bvh->Intersect(ray);
         is_intersected = hit.happened;
@@ -94,5 +94,29 @@ glm::vec3 PTRenderer::Scene::trace_ray(const PTRenderer::Ray &ray, float weight,
 void Scene::buildBVH() {
     printf(" - Generating BVH...\n\n");
     this->bvh = std::make_shared<BVHAccel>(objects, 1, BVHAccel::SplitMethod::NAIVE);
+}
+
+glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int bounce) {
+
+
+    glm::vec3 directL = glm::vec3(0.f);
+
+    intersect(ray, hit, tmin);
+    if(hit.happened){
+        if(hit.get_material()->isEmissive()){
+            if(bounce == 0)
+                return hit.get_material()->get_ke();
+            else
+                return glm::vec3(0.f);
+        }
+
+
+
+
+
+
+    }
+
+    return directL;
 }
 

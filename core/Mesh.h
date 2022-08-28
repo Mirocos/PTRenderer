@@ -41,10 +41,11 @@ public:
     vector<Vertex> vertices;
     vector<unsigned int> indices;
     vector<Texture> textures;
+    shared_ptr<Material> material;
     unsigned int VAO;
 
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures){
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, const shared_ptr<Material>& _material): material(_material){
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;

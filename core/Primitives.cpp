@@ -3,13 +3,14 @@
 //
 
 #include <iostream>
+
 #include "Primitives.h"
-const float INTERSECTION_EPSILON = 1e-4;
+const float INTERSECTION_EPSILON = 1e-3;
 
 namespace PTRenderer{
 
-    Primitives::Primitives(const ObjectType &_type, std::shared_ptr<Material> _material)
-    : type(_type), material(_material), emitted(false){
+    Primitives::Primitives(const ObjectType &_type, const std::shared_ptr<Material>& _material)
+    : type(_type), material(_material), area(){
 
     }
 
@@ -31,7 +32,9 @@ namespace PTRenderer{
         glm::vec3 ab = b - a;
         glm::vec3 ac = c - a;
         normal = glm::cross(ab, ac);
+        area = glm::length(normal) * 0.5f;
         normal = glm::normalize(normal);
+
     }
 
     Triangle::Triangle(const Triangle &triangle) : Primitives(triangle.type, triangle.material) {
@@ -64,7 +67,7 @@ namespace PTRenderer{
 
 
        // TODO may add Epsilon?
-       if(!(beta >= 0 && gamma >= 0 && beta + gamma <= 1.f))
+       if(!(beta > 0 && gamma > 0 && beta + gamma < 1.f))
            return false;
 
        if( t < tmin )
@@ -126,11 +129,24 @@ namespace PTRenderer{
         return T;
     }
 
+    void Triangle::sample(Intersection &p, float &pdf) {
+        float r1 = Utils::getUniformRandomFloat();
+        float r2 = Utils::getUniformRandomFloat();
+        float u = std::sqrtf(r1) * r2;
+        float v = std::sqrtf(r1) * (1 - r2);
+        glm::vec3 point = a * (1 - u - v) + b * u + c * v;
+        p.set_intersection(point);
+        p.set_material(material);
+        p.set_normal(normal);
+        pdf = 1.f / area;
+    }
+
 
     Rectangle::Rectangle(const glm::vec3 &_a, const glm::vec3 &_b, const glm::vec3 &_c, const glm::vec3 &_d,
                          std::shared_ptr<Material> _material)
                          : Primitives(Primitives::RECTANGLE, _material)
                          , a(_a), b(_b), c(_c), d(_d){
+        area = glm::length(glm::cross(b-a, d-a));
         glm::vec3 ab = glm::normalize(b - a);
         glm::vec3 ad = glm::normalize(d - a );
         normal = glm::normalize(glm::cross(ab, ad));

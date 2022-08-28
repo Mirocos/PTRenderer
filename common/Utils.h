@@ -6,7 +6,7 @@
 #define PTRENDERER_UTILS_H
 
 #include <algorithm>
-
+#include <random>
 namespace Utils {
     template<typename T>
     T clamp(T value, T minv, T maxv) {
@@ -17,6 +17,8 @@ namespace Utils {
     T lerp(T lh, T rh, float t){
         return (1 - t) * lh + t * rh;
     }
+
+    float getUniformRandomFloat();
 
 }
 

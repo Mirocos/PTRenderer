@@ -157,6 +157,6 @@ inline Ray Transform::operator()(const Ray &r) const {
     Point3f o = TransformPoint(r.get_origin());
     Point3f d = TransformVector3f(r.get_direction());
 
-
+    return Ray(o, d);
 }
 #endif //PTRENDERER_TRANSFORM_H

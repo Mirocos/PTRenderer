@@ -11,35 +11,42 @@ namespace PTRenderer{
     class Material {
 
     public:
-        Material() : diffuse_color(glm::vec3(1.f)){}
-        Material(const glm::vec3& _diffuse_color);
+        Material() : diffuse_color(glm::vec3(1.f)), emission_color(glm::vec3(0.f)){}
+        Material(const glm::vec3& _diffuse_color, const glm::vec3& emission=glm::vec3(0.f));
 
         const glm::vec3& get_diffuse_color() { return diffuse_color; }
         virtual glm::vec3 shade(const glm::vec3& normal, const glm::vec3& light_dir, const glm::vec3& view_dir) { return diffuse_color; };
 
         virtual bool reflectable() { return true; }
         virtual bool refractable() { return false; }
+        virtual bool isEmissive() { return emission_color != glm::vec3(0.f); }
         virtual glm::vec3 get_kd() { return glm::vec3(0.1, 0.2, 0.3); }
         virtual glm::vec3 get_ks() { return glm::vec3(0.f); }
+        virtual glm::vec3 get_ke() { return emission_color; }
     protected:
         glm::vec3 diffuse_color; // base color = albedo = reflectance
+        glm::vec3 emission_color;
     };
 
 
     class PhongMaterial : public Material{
 
     public:
-        PhongMaterial(const glm::vec3& _diffuse_color, const glm::vec3& _specular_color, glm::vec3 _kd, glm::vec3 _ks, float _index_of_refraction, float _exp = 32.f);
+
+        PhongMaterial(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& emission, float ior, float shininess);
         glm::vec3 shade(const glm::vec3& normal, const glm::vec3& light_dir, const glm::vec3& view_dir) override;
 
-        virtual bool reflectable() { return true; }
-        virtual bool refractable() { return true; }
-        virtual glm::vec3 get_kd() { return kd; }
-        virtual glm::vec3 get_ks() { return ks; }
+
+
+        virtual bool reflectable() override { return true; }
+        virtual bool refractable() override { return true; }
+        virtual glm::vec3 get_kd() override { return kd; }
+        virtual glm::vec3 get_ks() override { return ks; }
+
     private:
         glm::vec3 specular_color;
-        glm::vec3 kd, ks;
-        float exp;
+        glm::vec3 ka,kd, ks;
+        float shininess;
         float index_of_refraction;
 
     };
@@ -55,7 +62,6 @@ namespace PTRenderer{
         float chiGGX(float v);
         float GGX_Distribution(const glm::vec3& n, const glm::vec3& h, float alpha);
         float GGX_PartialGeometryTerm(const glm::vec3& v, const glm::vec3& n, const glm::vec3& h, float alpha);
-
         glm::vec3 Fresnel_Schlick(float cosTheta, float ior);
 
 

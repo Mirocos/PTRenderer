@@ -73,7 +73,7 @@ std::vector<PTRenderer::Triangle> Mesh::GetTriangles() {
     std::vector<PTRenderer::Triangle> tris;
     for(int i = 0; i < indices.size(); i += 3){
         std::vector<glm::vec3> tri{vertices[indices[i]].Position, vertices[indices[i+1]].Position, vertices[indices[i+2]].Position};
-        tris.emplace_back(tri, std::make_shared<PTRenderer::Material>());
+        tris.emplace_back(tri, material);
     }
     return tris;
 }
