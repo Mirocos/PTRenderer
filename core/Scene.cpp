@@ -102,21 +102,46 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
     glm::vec3 directL = glm::vec3(0.f);
 
     intersect(ray, hit, tmin);
-    if(hit.happened){
-        if(hit.get_material()->isEmissive()){
-            if(bounce == 0)
-                return hit.get_material()->get_ke();
-            else
-                return glm::vec3(0.f);
-        }
-
-
-
-
-
-
-    }
+//    if(hit.happened){
+//        if(hit.get_material()->isEmissive()){
+//            if(bounce == 0)
+//                return hit.get_material()->get_ke();
+//            else
+//                return glm::vec3(0.f);
+//        }
+//
+//
+//
+//
+//
+//
+//    }
+    if(hit.happened)
+        directL = hit.get_material()->get_diffuse_color();
 
     return directL;
+}
+
+void Scene::sampleLight(Intersection &inter, float &pdf) {
+    float sumArea = 0.f;
+    for(const auto& obj : objects){
+        if(obj->hasEmission())
+            sumArea += obj->getArea();
+    }
+
+    float u = Utils::getUniformRandomFloat();
+    float targetArea = u * sumArea;
+    float emitSumArea = 0.f;
+    for(const auto& obj : objects){
+        if(obj->hasEmission()){
+            emitSumArea += obj->getArea();
+            if(targetArea <= emitSumArea){
+                obj->sample(inter, pdf);
+                pdf *= obj->getArea() / sumArea;
+                break;
+            }
+        }
+    }
+
 }
 

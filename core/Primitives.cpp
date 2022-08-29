@@ -132,8 +132,8 @@ namespace PTRenderer{
     void Triangle::sample(Intersection &p, float &pdf) {
         float r1 = Utils::getUniformRandomFloat();
         float r2 = Utils::getUniformRandomFloat();
-        float u = std::sqrtf(r1) * r2;
-        float v = std::sqrtf(r1) * (1 - r2);
+        float u = sqrtf(r1) * r2;
+        float v = sqrtf(r1) * (1 - r2);
         glm::vec3 point = a * (1 - u - v) + b * u + c * v;
         p.set_intersection(point);
         p.set_material(material);

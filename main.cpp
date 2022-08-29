@@ -3,8 +3,8 @@
 #include "common/Image.h"
 #include "core/Renderer.h"
 #include "core/Transform.h"
-#define WIDTH 256
-#define HEIGHT 256
+#define WIDTH 1024
+#define HEIGHT 1024
 
 #define TEST_CODE 0
 
@@ -98,12 +98,7 @@ int main() {
                 glm::vec3 hitPoint = glm::vec3(0.f, 0.f, 0.f);
                 PTRenderer::Intersection hit(material, hitPoint, glm::vec3(0.f, 0.f, 0.f), INFINITY);
                 pixelColor += scene->castRay(ray, hit, scene->get_min_t(), 0);
-//                if(scene->intersect(ray, hit, scene->get_min_t())){
-//                    image.SetPixel(y, x, scene->get_color(hit));
-//                }
-
             }
-
             pixelColor /= (float)(SPP);
             image.SetPixel(y, x, pixelColor);
         }

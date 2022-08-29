@@ -39,6 +39,7 @@ std::shared_ptr<BVHBuildNode> BVHAccel::recursiveBuild(std::vector<std::shared_p
         node->object = objects[0];
         node->left = nullptr;
         node->right = nullptr;
+        node->area = objects[0]->getArea();
 
         return node;
 //        node->area = objects[0]->getArea();
@@ -48,6 +49,7 @@ std::shared_ptr<BVHBuildNode> BVHAccel::recursiveBuild(std::vector<std::shared_p
         node->right = recursiveBuild(std::vector{objects[1]});
 
         node->bounds = Bound3::Union(node->left->bounds, node->right->bounds);
+        node->area = node->left->area + node->right->area;
         return node;
     }
     else {
@@ -83,7 +85,7 @@ std::shared_ptr<BVHBuildNode> BVHAccel::recursiveBuild(std::vector<std::shared_p
         node->left = recursiveBuild(left_shapes);
         node->right = recursiveBuild(right_shapes);
         node->bounds = Bound3::Union(node->left->bounds, node->right->bounds);
-
+        node->area = node->left->area + node->right->area;
     }
 
     return node;
