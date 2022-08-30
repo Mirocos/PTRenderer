@@ -99,27 +99,44 @@ void Scene::buildBVH() {
 glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int bounce) {
 
 
-    glm::vec3 directL = glm::vec3(0.f);
+
 
     intersect(ray, hit, tmin);
-//    if(hit.happened){
-//        if(hit.get_material()->isEmissive()){
-//            if(bounce == 0)
-//                return hit.get_material()->get_ke();
-//            else
-//                return glm::vec3(0.f);
-//        }
-//
-//
-//
-//
-//
-//
-//    }
-    if(hit.happened)
-        directL = hit.get_material()->get_diffuse_color();
+    if(hit.happened){
+        if(hit.get_material()->isEmissive()){
+            if(bounce == 0)
+                return hit.get_material()->get_ke();
+            else
+                return glm::vec3(0.f);
+        }
 
-    return directL;
+
+        Intersection lightInter;
+        float lightPdf;
+        sampleLight(lightInter, lightPdf);
+
+        glm::vec3 point2Light = glm::normalize(lightInter.get_hit_point() - hit.get_hit_point());
+        Ray ray2Light(hit.get_hit_point(), point2Light);
+        Intersection nextHit;
+        intersect(ray2Light, nextHit, tmin);
+        glm::vec3 distanceVec = lightInter.get_hit_point() - nextHit.get_hit_point();
+        float lightLegalDistance = glm::length(distanceVec);
+        float distance = glm::length(lightInter.get_hit_point() - hit.get_hit_point());
+        glm::vec3 directL = glm::vec3(0.f);
+//        cout << distance << endl;
+        if(lightLegalDistance < 1e-3){
+            directL = hit.get_material()->get_diffuse_color() * lightInter.get_material()->get_diffuse_color() * glm::dot(hit.get_normal(), point2Light) * glm::dot(lightInter.get_normal(), -point2Light) / (distance * distance) / lightPdf;
+        }
+
+        glm::vec3 indriectL = glm::vec3(0.f);
+        // TODO: Sample Wi
+
+        return  directL + indriectL;
+        // TODO: Implement Russian Roulette
+
+    }
+
+    return glm::vec3(0.f);
 }
 
 void Scene::sampleLight(Intersection &inter, float &pdf) {
