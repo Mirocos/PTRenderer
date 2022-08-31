@@ -7,6 +7,8 @@
 
 #include <algorithm>
 #include <random>
+#include "glm/glm.hpp"
+
 namespace Utils {
     template<typename T>
     T clamp(T value, T minv, T maxv) {
@@ -19,6 +21,8 @@ namespace Utils {
     }
 
     float getUniformRandomFloat();
+
+    float evalLuminance(const glm::vec3& color);
 
 }
 

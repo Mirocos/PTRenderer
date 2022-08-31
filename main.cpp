@@ -1,8 +1,10 @@
 #include <iostream>
 #include <memory>
+#include <chrono>
 #include "common/Image.h"
 #include "core/Renderer.h"
 #include "core/Transform.h"
+#include <omp.h>
 #define WIDTH 1024
 #define HEIGHT 1024
 
@@ -82,12 +84,11 @@ int main() {
     Image image(WIDTH, HEIGHT);
     image.SetAllPixels(glm::vec3(0.f, 0.f, 0.f));
     float total = 1.f * WIDTH * HEIGHT;
-
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+#pragma omp parallel for
     for (int x = 0; x < WIDTH; ++x) {
         for (int y = 0; y < HEIGHT; ++y) {
-            if(x == WIDTH / 2 && y == HEIGHT / 2){
-                int n = 0;
-            }
             float u = (float)(1.f * x + 0.5f) / (float) (WIDTH);
             float v = (float)(1.f * y + 0.5f)/ (float) (HEIGHT);
             PTRenderer::Ray ray = scene->generate_ray(glm::vec2(u, v));
@@ -103,7 +104,9 @@ int main() {
             image.SetPixel(y, x, pixelColor);
         }
     }
-
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "time: " << elapsed_seconds.count() << std::endl;
     image.SaveTGA("cornell_box.tga");
     glfwTerminate();
     return 0;

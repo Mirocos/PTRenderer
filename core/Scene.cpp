@@ -78,12 +78,7 @@ glm::vec3 PTRenderer::Scene::trace_ray(const PTRenderer::Ray &ray, float weight,
 
     auto _m = hit.get_material();
 
-    if(_m->reflectable()){
-        glm::vec3 R = reflect(-L, N);
-        Ray reflect_ray(hit.get_hit_point(), R);
 
-
-    }
 
 
 
@@ -97,15 +92,11 @@ void Scene::buildBVH() {
 }
 
 glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int bounce) {
-
-
-
-
     intersect(ray, hit, tmin);
     if(hit.happened){
         if(hit.get_material()->isEmissive()){
             if(bounce == 0)
-                return hit.get_material()->get_ke();
+                return hit.get_material()->getEmission();
             else
                 return glm::vec3(0.f);
         }
@@ -115,23 +106,32 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
         float lightPdf;
         sampleLight(lightInter, lightPdf);
 
-        glm::vec3 point2Light = glm::normalize(lightInter.get_hit_point() - hit.get_hit_point());
-        Ray ray2Light(hit.get_hit_point(), point2Light);
+        glm::vec3 hitPoint = hit.get_hit_point();
+        glm::vec3 N = hit.get_normal();
+        glm::vec3 point2Light = glm::normalize(lightInter.get_hit_point() - hitPoint);
+        Ray ray2Light(hitPoint, point2Light);
         Intersection nextHit;
         intersect(ray2Light, nextHit, tmin);
         glm::vec3 distanceVec = lightInter.get_hit_point() - nextHit.get_hit_point();
         float lightLegalDistance = glm::length(distanceVec);
-        float distance = glm::length(lightInter.get_hit_point() - hit.get_hit_point());
+        float distance = glm::length(lightInter.get_hit_point() - hitPoint);
         glm::vec3 directL = glm::vec3(0.f);
 //        cout << distance << endl;
         if(lightLegalDistance < 1e-3){
-            directL = hit.get_material()->get_diffuse_color() * lightInter.get_material()->get_diffuse_color() * glm::dot(hit.get_normal(), point2Light) * glm::dot(lightInter.get_normal(), -point2Light) / (distance * distance) / lightPdf;
+            directL = hit.get_material()->get_diffuse_color() * lightInter.get_material()->getEmission() * glm::dot(N, point2Light) * glm::dot(lightInter.get_normal(), -point2Light) / distance / lightPdf;
         }
 
-        glm::vec3 indriectL = glm::vec3(0.f);
+        if(bounce >= 3)
+            return glm::vec3(0.f);
         // TODO: Sample Wi
+        float pdf;
+        glm::vec3 Wi = glm::normalize(hit.get_material()->sample(N, pdf));
+        glm::vec3 Wo = -ray.get_direction();
+        Ray newRay(hitPoint, Wi);
+        Intersection newHit;
+        glm::vec3 indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf;
 
-        return  directL + indriectL;
+        return  directL + indirectL;
         // TODO: Implement Russian Roulette
 
     }

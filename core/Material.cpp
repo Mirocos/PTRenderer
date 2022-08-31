@@ -16,6 +16,20 @@ namespace PTRenderer{
 
     }
 
+    glm::vec3 Material::toWorld(const glm::vec3 &a, const glm::vec3 &N) {
+        glm::vec3 B, C;
+        if (std::fabs(N.x) > std::fabs(N.y)){
+            float invLen = 1.0f / std::sqrt(N.x * N.x + N.z * N.z);
+            C = glm::vec3(N.z * invLen, 0.0f, -N.x *invLen);
+        }
+        else {
+            float invLen = 1.0f / std::sqrt(N.y * N.y + N.z * N.z);
+            C = glm::vec3(0.0f, N.z * invLen, -N.y *invLen);
+        }
+        B = glm::cross(C, N);
+        return a.x * B + a.y * C + a.z * N;
+    }
+
 
     PhongMaterial::PhongMaterial(const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular,  const glm::vec3& emission,
                                  float ior, float shininess)
@@ -38,6 +52,42 @@ namespace PTRenderer{
         return  NdotL * diffuse_color * kd / (float)M_PI+ NdotH * std::pow(NdotH, 32.f) * specular_color * ks / (33.f / 2.f / (float)M_PI);
     }
 
+    glm::vec3 PhongMaterial::sample(const glm::vec3& N, float& pdf) {
+        float ld = Utils::evalLuminance(kd);
+        float ls = Utils::evalLuminance(ks);
+        float lSum = ld + ls;
+        std::vector<float> cdf{ld / lSum, 1.f};
+        float typePdf = Utils::getUniformRandomFloat();
+        float u1 = Utils::getUniformRandomFloat();
+        float u2 = Utils::getUniformRandomFloat();
+        float theta;
+        float phi;
+        if(typePdf < cdf[0]){
+            // DIFFUSE
+            theta = acos(std::sqrt(u1));
+            phi = M_PI_2 * u2;
+            pdf = cos(theta) * sin(theta) * M_1_PI * ld / lSum;
+        } else {
+            // SPECULAR
+            theta = std::acos(pow(u1, 1.f / (shininess + 1.f)));
+            phi = M_PI_2 * u2;
+            pdf = (1.f + shininess) * M_2_PI * pow(cos(theta), shininess) * sin(theta) * ls / lSum;
+        }
+
+        float x = sin(theta) * cos(phi);
+        float y = sin(theta) * sin(phi);
+        float z = cos(theta);
+
+        glm::vec3 W_i_local = glm::vec3(x, y, z);
+        glm::vec3 W_i = toWorld(W_i_local, N);
+        return W_i;
+    }
+
+    glm::vec3 PhongMaterial::eval(const glm::vec3 &Wi, const glm::vec3 &Wo, const glm::vec3 &N) {
+        glm::vec3 R = 2.f * glm::dot(Wo, N) * N - Wo;
+        float cosine = fmax(glm::dot(R, Wi), 0.f);
+        return kd * (float)M_1_PI + ks * powf(cosine, shininess) * (shininess + 2.f) * (float)M_2_PI;
+    }
 
 
     float CookTorrancetaMerial::chiGGX(float v) {

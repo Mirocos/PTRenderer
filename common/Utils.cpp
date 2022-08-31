@@ -11,4 +11,8 @@ namespace Utils{
         std::uniform_real_distribution<float> dist(0, 1);
         return dist(rng);
     }
+
+    float evalLuminance(const glm::vec3 &color) {
+        return glm::dot(color, glm::vec3(0.2126f, 0.7152f, 0.722f));
+    }
 }
