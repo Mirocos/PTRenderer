@@ -69,7 +69,7 @@ namespace PTRenderer {
     }
 
     float PerspectiveCamera::get_min_t() const {
-        return 0.f;
+        return 0.01f;
     }
 
     glm::mat4 PerspectiveCamera::get_view_mtx() {

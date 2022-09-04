@@ -42,7 +42,7 @@ namespace PTRenderer{
         // camera access
         Ray generate_ray(const glm::vec2& point) { return camera->generate_ray(point); }
         void translate(const glm::vec3& vec) { camera->translate(vec); }
-        void sampleLight(Intersection& inter, float& pdf);
+        float sampleLight(Intersection& inter, float& pdf);
 
         glm::mat4 get_view_mtx() { return camera->get_view_mtx(); }
 

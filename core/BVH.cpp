@@ -110,7 +110,7 @@ Intersection BVHAccel::getIntersection(const std::shared_ptr<BVHBuildNode> &node
             return (left_hit.get_t() < right_hit.get_t()? left_hit : right_hit);
         } else {
             Intersection intersection;
-            node->object->intersect(ray, intersection, 0.f);
+            node->object->intersect(ray, intersection, 0.01f);
             return intersection;
         }
     } else {

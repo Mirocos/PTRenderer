@@ -6,7 +6,7 @@
 #define PTRENDERER_MATERIAL_H
 
 #include "glm/vec3.hpp"
-
+#include "Macrodefine.h"
 namespace PTRenderer{
     class Material {
 

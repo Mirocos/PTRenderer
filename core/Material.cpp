@@ -52,7 +52,7 @@ namespace PTRenderer{
         return  NdotL * diffuse_color * kd / (float)M_PI+ NdotH * std::pow(NdotH, 32.f) * specular_color * ks / (33.f / 2.f / (float)M_PI);
     }
 
-    glm::vec3 PhongMaterial::sample(const glm::vec3& N, float& pdf) {
+    glm::vec3 PhongMaterial::sample(const glm::vec3& N, float& pdf)  {
         float ld = Utils::evalLuminance(kd);
         float ls = Utils::evalLuminance(ks);
         float lSum = ld + ls;
@@ -60,23 +60,37 @@ namespace PTRenderer{
         float typePdf = Utils::getUniformRandomFloat();
         float u1 = Utils::getUniformRandomFloat();
         float u2 = Utils::getUniformRandomFloat();
-        float theta;
-        float phi;
+        float sinTheta, cosTheta;
+        float sinPhi, cosPhi;
         if(typePdf < cdf[0]){
             // DIFFUSE
-            theta = acos(std::sqrt(u1));
-            phi = M_PI_2 * u2;
-            pdf = cos(theta) * sin(theta) * M_1_PI * ld / lSum;
+
+            // cosine importance sampling
+            sinTheta = sqrtf(u1);
+            cosTheta = sqrtf(1-u1);
+            sinPhi = sin(PI2 * u2);
+            cosPhi = cos(PI2 * u2);
+            pdf = cosTheta * INV_PI * ld / lSum;
+
+
+            // uniform sampling
+/*            cosTheta = u1;
+            sinTheta = sqrtf(1-u1*u1);
+            sinPhi = sin(PI2 * u2);
+            cosPhi = cos(PI2 * u2);
+            pdf = INV_PI2 * ld / lSum;*/
         } else {
             // SPECULAR
-            theta = std::acos(pow(u1, 1.f / (shininess + 1.f)));
-            phi = M_PI_2 * u2;
-            pdf = (1.f + shininess) * M_2_PI * pow(cos(theta), shininess) * sin(theta) * ls / lSum;
+            cosTheta = powf(u1, 1.f/(shininess+1.f));
+            sinTheta = sqrtf(1 - cosTheta * cosTheta);
+            sinPhi = sin(PI2 * u2);
+            cosPhi = cos(PI2 * u2);
+            pdf = (1.f + shininess) * INV_PI2 * pow(cosTheta, shininess) * ls / lSum;
         }
 
-        float x = sin(theta) * cos(phi);
-        float y = sin(theta) * sin(phi);
-        float z = cos(theta);
+        float x = sinTheta * cosPhi;
+        float y = sinTheta * sinPhi;
+        float z = cosTheta;
 
         glm::vec3 W_i_local = glm::vec3(x, y, z);
         glm::vec3 W_i = toWorld(W_i_local, N);
@@ -86,7 +100,7 @@ namespace PTRenderer{
     glm::vec3 PhongMaterial::eval(const glm::vec3 &Wi, const glm::vec3 &Wo, const glm::vec3 &N) {
         glm::vec3 R = 2.f * glm::dot(Wo, N) * N - Wo;
         float cosine = fmax(glm::dot(R, Wi), 0.f);
-        return kd * (float)M_1_PI + ks * powf(cosine, shininess) * (shininess + 2.f) * (float)M_2_PI;
+        return kd * (float)M_1_PI + ks * powf(cosine, shininess) * (shininess + 2.f) * (float)M_1_PI * 0.5f;
     }
 
 

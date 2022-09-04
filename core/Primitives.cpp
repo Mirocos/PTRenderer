@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "Primitives.h"
+#include "glm/gtx/string_cast.hpp"
+
 const float INTERSECTION_EPSILON = 1e-3;
 
 namespace PTRenderer{
@@ -34,7 +36,6 @@ namespace PTRenderer{
         normal = glm::cross(ab, ac);
         area = glm::length(normal) * 0.5f;
         normal = glm::normalize(normal);
-
     }
 
     Triangle::Triangle(const Triangle &triangle) : Primitives(triangle.type, triangle.material) {
@@ -55,11 +56,8 @@ namespace PTRenderer{
        float detA = glm::determinant(A);
        float inverse_detA = 1.f / detA;
        float detBETA = glm::determinant(BETA);
-//        calculate_det(BETA);
        float detGAMMA = glm::determinant(GAMMA);
-//        calculate_det(GAMMA);
        float detT = glm::determinant(T);
-//        calculate_det(T);
 
        float beta = detBETA * inverse_detA;
        float gamma = detGAMMA * inverse_detA;
@@ -132,8 +130,9 @@ namespace PTRenderer{
     void Triangle::sample(Intersection &p, float &pdf) {
         float r1 = Utils::getUniformRandomFloat();
         float r2 = Utils::getUniformRandomFloat();
-        float u = sqrtf(r1) * r2;
-        float v = sqrtf(r1) * (1 - r2);
+        float sr1 = sqrtf(r1);
+        float u = 1 - sr1;
+        float v = sr1 * r2;
         glm::vec3 point = a * (1 - u - v) + b * u + c * v;
         p.set_intersection(point);
         p.set_material(material);

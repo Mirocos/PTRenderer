@@ -3,6 +3,7 @@
 //
 
 #include "Scene.h"
+#include "glm/gtx/string_cast.hpp"
 
 void PTRenderer::Scene::add_model(const std::shared_ptr<Model> &model) {
     models.push_back(model);
@@ -93,6 +94,7 @@ void Scene::buildBVH() {
 
 glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int bounce) {
     intersect(ray, hit, tmin);
+
     if(hit.happened){
         if(hit.get_material()->isEmissive()){
             if(bounce == 0)
@@ -100,7 +102,25 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
             else
                 return glm::vec3(0.f);
         }
+/*
 
+        glm::vec3 hitPoint = hit.get_hit_point();
+        glm::vec3 N = hit.get_normal();
+        float lpdf;
+        glm::vec3 lWi = glm::normalize(hit.get_material()->sample(N, lpdf));
+        glm::vec3 lWo = -ray.get_direction();
+        Ray shadowRay(hitPoint, lWi);
+        Intersection shadowHit;
+        intersect(shadowRay, shadowHit, tmin);
+        glm::vec3 directL = glm::vec3(0.f);
+        if(shadowHit.happened) {
+            directL = shadowHit.get_material()->getEmission() * hit.get_material()->eval(lWi, lWo, N) * glm::dot(lWi, N) /
+                    lpdf;
+
+        }
+*/
+
+        glm::vec3 Wo = -ray.get_direction();
 
         Intersection lightInter;
         float lightPdf;
@@ -114,32 +134,32 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
         intersect(ray2Light, nextHit, tmin);
         glm::vec3 distanceVec = lightInter.get_hit_point() - nextHit.get_hit_point();
         float lightLegalDistance = glm::length(distanceVec);
-        float distance = glm::length(lightInter.get_hit_point() - hitPoint);
+        glm::vec3 lightPath = lightInter.get_hit_point() - hitPoint;
+        float distance2 = glm::dot(lightPath, lightPath);
         glm::vec3 directL = glm::vec3(0.f);
-//        cout << distance << endl;
-        if(lightLegalDistance < 1e-3){
-            directL = hit.get_material()->get_diffuse_color() * lightInter.get_material()->getEmission() * glm::dot(N, point2Light) * glm::dot(lightInter.get_normal(), -point2Light) / distance / lightPdf;
+        if(nextHit.happened && lightLegalDistance < 1e-2){
+            directL = hit.get_material()->eval(point2Light, Wo, N)* lightInter.get_material()->getEmission() * fmax(glm::dot(N, point2Light), 0.f) * fmax(glm::dot(lightInter.get_normal(), -point2Light),0.f) / distance2 / lightPdf;
         }
 
-        if(bounce >= 3)
-            return glm::vec3(0.f);
-        // TODO: Sample Wi
-        float pdf;
-        glm::vec3 Wi = glm::normalize(hit.get_material()->sample(N, pdf));
-        glm::vec3 Wo = -ray.get_direction();
-        Ray newRay(hitPoint, Wi);
-        Intersection newHit;
-        glm::vec3 indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf;
+
+        glm::vec3 indirectL = glm::vec3(0.f);
+        if(Utils::getUniformRandomFloat() < RussianRoulette){
+            float pdf;
+            glm::vec3 Wi = glm::normalize(hit.get_material()->sample(N, pdf));
+            Ray newRay(hitPoint, Wi);
+            Intersection newHit;
+            indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf / RussianRoulette;
+        }
+
 
         return  directL + indirectL;
-        // TODO: Implement Russian Roulette
 
     }
 
     return glm::vec3(0.f);
 }
 
-void Scene::sampleLight(Intersection &inter, float &pdf) {
+float Scene::sampleLight(Intersection &inter, float &pdf) {
     float sumArea = 0.f;
     for(const auto& obj : objects){
         if(obj->hasEmission())
@@ -159,6 +179,7 @@ void Scene::sampleLight(Intersection &inter, float &pdf) {
             }
         }
     }
+    return sumArea;
 
 }
 

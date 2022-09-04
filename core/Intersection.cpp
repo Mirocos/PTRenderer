@@ -14,7 +14,7 @@ namespace PTRenderer{
 
     Intersection::Intersection() :material(nullptr), happened(false) {
         normal = glm::vec3(1.f);
-        intersection_point = glm::vec3(1.f);
+        intersection_point = glm::vec3(INFINITY);
         t = INFINITY;
     }
 
