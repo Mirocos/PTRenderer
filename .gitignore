@@ -4,3 +4,5 @@ build/*
 .DStore
 out
 thirdparty/opencv
+outputs
+.vs
