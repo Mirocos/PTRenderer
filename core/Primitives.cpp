@@ -65,7 +65,7 @@ namespace PTRenderer{
 
 
        // TODO may add Epsilon?
-       if(!(beta > 0 && gamma > 0 && beta + gamma < 1.f))
+       if(!(beta >= 0 && gamma >= 0 && beta + gamma <= 1.f))
            return false;
 
        if( t < tmin )

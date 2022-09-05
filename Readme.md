@@ -6,6 +6,7 @@ this is my coding practice for leaning path tracing
 ## TODO List
 - [ ] run cornell box
   - [x] diffuse material
+  - [ ] Phong specular term still meets some bugs. try PBR first
   - [ ] implement microfacet/pbr material
 - [ ] run veach-mis
   - [ ] implement multiple importrance sampling
@@ -16,6 +17,22 @@ this is my coding practice for leaning path tracing
 - [ ] implement post-processing denoiser
 - [ ] implement physical camera
 - [ ] the others 
+
+
+
+## Image
+### Cornell Box
+Reference Image:
+[Reference image is from Benedikt Bitterli](![Reference](results/cornell-box-reference.png))
+![Reference](results/cornell-box-reference.png)
+
+
+
+Render by this Path Tracer(64 SPP)
+![Reference](results/cornell-box-mine-spp-64.png)
+
+
+
 
 
 
@@ -35,3 +52,10 @@ cmake .. -DOpenCV_DIR=thirdparty/opencv && make -j
 ```
 4. Set Environment OPENCV_IO_ENABLE_OPENEXR=1 to enable OpenCV EXR IO Support
 5. (optional) you may need to copy your OpenCV LIBRARIES to the execution directory or add it to your environment path
+
+
+
+
+## Development Summary
+- remember to set offset for start point of secondary ray to avoid self-intersection
+- set evil number(epsilon)

@@ -106,9 +106,10 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
 
         glm::vec3 hitPoint = hit.get_hit_point();
         glm::vec3 N = hit.get_normal();
-        float lpdf;
-        glm::vec3 lWi = glm::normalize(hit.get_material()->sample(N, lpdf));
         glm::vec3 lWo = -ray.get_direction();
+        float lpdf;
+        glm::vec3 lWi = glm::normalize(hit.get_material()->sample(lWo, N, lpdf));
+
         Ray shadowRay(hitPoint, lWi);
         Intersection shadowHit;
         intersect(shadowRay, shadowHit, tmin);
@@ -145,10 +146,12 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
         glm::vec3 indirectL = glm::vec3(0.f);
         if(Utils::getUniformRandomFloat() < RussianRoulette){
             float pdf;
-            glm::vec3 Wi = glm::normalize(hit.get_material()->sample(N, pdf));
-            Ray newRay(hitPoint, Wi);
-            Intersection newHit;
-            indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf / RussianRoulette;
+            glm::vec3 Wi = glm::normalize(hit.get_material()->sample(Wo, N, pdf));
+            if(pdf > 0.f){
+                Ray newRay(hitPoint, Wi);
+                Intersection newHit;
+                indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf / RussianRoulette;
+            }
         }
 
 

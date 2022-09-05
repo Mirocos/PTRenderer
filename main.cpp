@@ -45,7 +45,7 @@ int main() {
                                                                                                  angle);
     std::shared_ptr<PTRenderer::Scene> scene = std::make_shared<PTRenderer::Scene>(camera);
 
-    std::string sceneName = "cornell-box-original";
+    std::string sceneName = "CornellBox";
     std::shared_ptr<PTRenderer::Model> model = std::make_shared<PTRenderer::Model>("../scenes/"+sceneName+"/");
     std::shared_ptr<PTRenderer::Light> light = std::make_shared<PTRenderer::DirectionLight>(
             glm::vec3(-0.5f, -0.5f, -1.f), glm::vec3(0.9f, 0.9f, 0.9f));

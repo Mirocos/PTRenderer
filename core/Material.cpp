@@ -30,6 +30,10 @@ namespace PTRenderer{
         return a.x * B + a.y * C + a.z * N;
     }
 
+    glm::vec3 Material::getReflectDirection(const glm::vec3 &Wo, const glm::vec3 &N) {
+        return 2.f * glm::dot(Wo, N) * N - Wo;
+    }
+
 
     PhongMaterial::PhongMaterial(const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular,  const glm::vec3& emission,
                                  float ior, float shininess)
@@ -52,7 +56,7 @@ namespace PTRenderer{
         return  NdotL * diffuse_color * kd / (float)M_PI+ NdotH * std::pow(NdotH, 32.f) * specular_color * ks / (33.f / 2.f / (float)M_PI);
     }
 
-    glm::vec3 PhongMaterial::sample(const glm::vec3& N, float& pdf)  {
+    glm::vec3 PhongMaterial::sample(const glm::vec3& Wo, const glm::vec3& N, float& pdf)  {
         float ld = Utils::evalLuminance(kd);
         float ls = Utils::evalLuminance(ks);
         float lSum = ld + ls;
@@ -62,7 +66,7 @@ namespace PTRenderer{
         float u2 = Utils::getUniformRandomFloat();
         float sinTheta, cosTheta;
         float sinPhi, cosPhi;
-        if(typePdf < cdf[0]){
+        if(typePdf <= cdf[0]){
             // DIFFUSE
 
             // cosine importance sampling
@@ -81,11 +85,12 @@ namespace PTRenderer{
             pdf = INV_PI2 * ld / lSum;*/
         } else {
             // SPECULAR
+            // TODO: Still have Bugs
             cosTheta = powf(u1, 1.f/(shininess+1.f));
             sinTheta = sqrtf(1 - cosTheta * cosTheta);
             sinPhi = sin(PI2 * u2);
             cosPhi = cos(PI2 * u2);
-            pdf = (1.f + shininess) * INV_PI2 * pow(cosTheta, shininess) * ls / lSum;
+            pdf = (2.f + shininess) * INV_PI2 * ls / lSum;   // without cos(alpha)^n
         }
 
         float x = sinTheta * cosPhi;
@@ -94,14 +99,27 @@ namespace PTRenderer{
 
         glm::vec3 W_i_local = glm::vec3(x, y, z);
         glm::vec3 W_i = toWorld(W_i_local, N);
+
+        if(typePdf > cdf[0]){
+            // SPECULAR
+            glm::vec3 R = getReflectDirection(Wo, N);
+            if(glm::dot(N, W_i) <= 0.f)
+                pdf = 0.f;
+            else{
+                float cosine = glm::dot(R, W_i);
+                pdf *= powf(cosine, shininess);
+            }
+        }
+
         return W_i;
     }
 
     glm::vec3 PhongMaterial::eval(const glm::vec3 &Wi, const glm::vec3 &Wo, const glm::vec3 &N) {
-        glm::vec3 R = 2.f * glm::dot(Wo, N) * N - Wo;
+        glm::vec3 R = getReflectDirection(Wo, N);
         float cosine = fmax(glm::dot(R, Wi), 0.f);
         return kd * (float)M_1_PI + ks * powf(cosine, shininess) * (shininess + 2.f) * (float)M_1_PI * 0.5f;
     }
+
 
 
     float CookTorrancetaMerial::chiGGX(float v) {

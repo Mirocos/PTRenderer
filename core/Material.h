@@ -20,9 +20,10 @@ namespace PTRenderer{
         virtual glm::vec3 get_kd() { return glm::vec3(0.1, 0.2, 0.3); }
         virtual glm::vec3 get_ks() { return glm::vec3(0.f); }
         virtual glm::vec3 getEmission() { return emission_color; }
-        virtual glm::vec3 sample(const glm::vec3& N, float& pdf) { return glm::vec3(0.f); } ;
-        virtual glm::vec3 eval(const glm::vec3& Wi, const glm::vec3& Wo, const glm::vec3& N) { return glm::vec3(0.f); } ;
+        virtual glm::vec3 sample(const glm::vec3& Wo, const glm::vec3& N, float& pdf) { return glm::vec3(0.f); } ;
+        virtual glm::vec3 eval(const glm::vec3& Wi, const glm::vec3& Wo, const glm::vec3& N) { return glm::vec3(0.f); }
 
+        glm::vec3 getReflectDirection(const glm::vec3& Wo, const glm::vec3& N);
         glm::vec3 toWorld(const glm::vec3& a, const glm::vec3& N);
 
     protected:
@@ -42,7 +43,7 @@ namespace PTRenderer{
 
         glm::vec3 get_kd() override { return kd; }
         glm::vec3 get_ks() override { return ks; }
-        glm::vec3 sample(const glm::vec3& N, float& pdf) override;
+        glm::vec3 sample(const glm::vec3& Wo, const glm::vec3& N, float& pdf) override;
         glm::vec3 eval(const glm::vec3& Wi, const glm::vec3& Wo, const glm::vec3& N) override;
     private:
         glm::vec3 specular_color;
@@ -58,7 +59,7 @@ namespace PTRenderer{
     public:
         CookTorrancetaMerial(const glm::vec3& _diffuse_color, float roughness, float metallic, float index_of_refraction): Material(){}
         glm::vec3 shade(const glm::vec3& normal, const glm::vec3& light_dir, const glm::vec3& view_dir) override;
-        glm::vec3 sample(const glm::vec3& N, float& pdf) override { return glm::vec3(0.f); }
+        glm::vec3 sample(const glm::vec3& Wi, const glm::vec3& N, float& pdf) override { return glm::vec3(0.f); }
         glm::vec3 eval(const glm::vec3& Wi, const glm::vec3& Wo, const glm::vec3& N) override { return glm::vec3(0.f); }
     private:
         float chiGGX(float v);
