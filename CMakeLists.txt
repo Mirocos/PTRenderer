@@ -23,7 +23,9 @@ add_executable(${PROJECT_NAME} main.cpp
                ${CORE_SOURCE}
                ${COMMON_SOURCE}
                 common/Type.h
-        common/Utils.h core/Transform.cpp core/Transform.h)
+        common/Utils.h core/Transform.cpp core/Transform.h
+        thirdparty/pugixml/src/pugixml.cpp
+        )
 
 target_include_directories(${PROJECT_NAME} PRIVATE assimp)
 target_include_directories(${PROJECT_NAME} PRIVATE glm)
