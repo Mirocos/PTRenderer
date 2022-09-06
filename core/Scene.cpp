@@ -134,11 +134,10 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
         Intersection nextHit;
         intersect(ray2Light, nextHit, tmin);
         glm::vec3 distanceVec = lightInter.get_hit_point() - nextHit.get_hit_point();
-        float lightLegalDistance = glm::length(distanceVec);
         glm::vec3 lightPath = lightInter.get_hit_point() - hitPoint;
         float distance2 = glm::dot(lightPath, lightPath);
         glm::vec3 directL = glm::vec3(0.f);
-        if(nextHit.happened && lightLegalDistance < 1e-2){
+        if(nextHit.happened && nextHit.get_material()->isEmissive()){
             directL = hit.get_material()->eval(point2Light, Wo, N)* lightInter.get_material()->getEmission() * fmax(glm::dot(N, point2Light), 0.f) * fmax(glm::dot(lightInter.get_normal(), -point2Light),0.f) / distance2 / lightPdf;
         }
 
@@ -150,7 +149,11 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
             if(pdf > 0.f){
                 Ray newRay(hitPoint, Wi);
                 Intersection newHit;
-                indirectL = castRay(newRay, newHit, tmin, bounce+1) * hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf / RussianRoulette;
+                indirectL =  castRay(newRay, newHit, tmin, bounce+1) ;
+                if(glm::dot(newHit.get_normal(), Wi) < 0.f)
+                    indirectL *= hit.get_material()->eval(Wi, Wo, N) * fmax(glm::dot(Wi, N), 0.f) / pdf / RussianRoulette;
+                else
+                    indirectL = glm::vec3(0.f);
             }
         }
 
