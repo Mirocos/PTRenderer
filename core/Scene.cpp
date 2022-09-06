@@ -102,9 +102,8 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
             else
                 return glm::vec3(0.f);
         }
-/*
 
-        glm::vec3 hitPoint = hit.get_hit_point();
+/*        glm::vec3 hitPoint = hit.get_hit_point();
         glm::vec3 N = hit.get_normal();
         glm::vec3 lWo = -ray.get_direction();
         float lpdf;
@@ -114,12 +113,13 @@ glm::vec3 Scene::castRay(const Ray &ray, Intersection &hit, float tmin, int boun
         Intersection shadowHit;
         intersect(shadowRay, shadowHit, tmin);
         glm::vec3 directL = glm::vec3(0.f);
-        if(shadowHit.happened) {
-            directL = shadowHit.get_material()->getEmission() * hit.get_material()->eval(lWi, lWo, N) * glm::dot(lWi, N) /
+        if(shadowHit.happened && shadowHit.get_material()->isEmissive()) {
+            glm::vec3 lN = shadowHit.get_normal();
+            float visibility = glm::dot(lN, lWi) < 0.f? 1.f : 0.f;
+            directL = visibility * shadowHit.get_material()->getEmission() * hit.get_material()->eval(lWi, lWo, N) * glm::dot(lWi, N) /
                     lpdf;
 
-        }
-*/
+        }*/
 
         glm::vec3 Wo = -ray.get_direction();
 
